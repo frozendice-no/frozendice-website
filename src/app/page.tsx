@@ -1,65 +1,126 @@
-import Image from "next/image";
+import Link from "next/link";
+import { Map, BookOpen, ShoppingBag, ArrowRight, Dice5 } from "lucide-react";
+import { buttonVariants } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
-export default function Home() {
+const features = [
+  {
+    icon: Map,
+    title: "Battle Maps",
+    description:
+      "High-quality battle maps ready for your virtual tabletop or print-and-play sessions.",
+  },
+  {
+    icon: BookOpen,
+    title: "Campaign Resources",
+    description:
+      "Adventure modules, NPC generators, and lore guides to elevate your campaigns.",
+  },
+  {
+    icon: ShoppingBag,
+    title: "Digital Store",
+    description:
+      "Browse and purchase premium D&D resources — PDFs, maps, and bundles delivered instantly.",
+  },
+];
+
+export default function HomePage() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <>
+      <section className="relative overflow-hidden py-24 sm:py-32 lg:py-40">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-2xl text-center">
+            <div className="mb-6 flex justify-center">
+              <Dice5 className="h-16 w-16 text-primary" />
+            </div>
+            <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
+              Roll into Adventure
+            </h1>
+            <p className="mt-6 text-lg leading-8 text-muted-foreground">
+              Frozen Dice is a Norwegian D&amp;D community dedicated to
+              creating premium tabletop RPG content — from battle maps to
+              complete campaign guides.
+            </p>
+            <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+              <Link
+                href="/store"
+                className={cn(buttonVariants({ size: "lg" }), "gap-2")}
+              >
+                Browse the Store
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+              <Link
+                href="/blog"
+                className={buttonVariants({ size: "lg", variant: "outline" })}
+              >
+                Read the Blog
+              </Link>
+            </div>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </section>
+
+      <section className="border-t bg-muted/30 py-20 sm:py-28">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-2xl text-center">
+            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+              Everything You Need at the Table
+            </h2>
+            <p className="mt-4 text-muted-foreground">
+              Resources crafted by dungeon masters, for dungeon masters.
+            </p>
+          </div>
+
+          <div className="mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {features.map((feature) => (
+              <Card
+                key={feature.title}
+                className="border-0 bg-background shadow-sm"
+              >
+                <CardHeader>
+                  <feature.icon className="mb-2 h-10 w-10 text-primary" />
+                  <CardTitle>{feature.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription className="text-base">
+                    {feature.description}
+                  </CardDescription>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </div>
-      </main>
-    </div>
+      </section>
+
+      <section className="py-20 sm:py-28">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-xl text-center">
+            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+              Join the Community
+            </h2>
+            <p className="mt-4 text-muted-foreground">
+              Stay updated with new releases, campaign tips, and exclusive
+              content from Frozen Dice.
+            </p>
+            <div className="mt-8">
+              <Link
+                href="/blog"
+                className={cn(buttonVariants({ size: "lg" }), "gap-2")}
+              >
+                Get Started
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+    </>
   );
 }
