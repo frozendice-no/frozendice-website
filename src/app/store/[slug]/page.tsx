@@ -1,16 +1,13 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getAllProducts, getProductBySlug, formatPrice } from "@/lib/store";
+import { getProductBySlug, formatPrice } from "@/lib/store";
 import { BreadcrumbJsonLd, JsonLd } from "@/components/json-ld";
 import { CheckoutButton } from "@/components/checkout-button";
 import { siteConfig } from "@/lib/site-config";
 
-type Props = { params: Promise<{ slug: string }> };
+export const dynamic = "force-dynamic";
 
-export async function generateStaticParams() {
-  const products = await getAllProducts();
-  return products.map((p) => ({ slug: p.slug }));
-}
+type Props = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
