@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { siteConfig } from "@/lib/site-config";
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -6,8 +7,9 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
+        disallow: ["/api/", "/admin/"],
       },
     ],
-    sitemap: "https://frozendice.no/sitemap.xml",
+    sitemap: `${siteConfig.url}/sitemap.xml`,
   };
 }

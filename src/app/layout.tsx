@@ -2,6 +2,10 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
+import { GoogleTagManager, GoogleTagManagerNoscript } from "@/components/google-tag-manager";
+import { CookieConsent } from "@/components/cookie-consent";
+import { OrganizationJsonLd, WebSiteJsonLd } from "@/components/json-ld";
+import { siteConfig } from "@/lib/site-config";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -15,13 +19,12 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://frozendice.no"),
+  metadataBase: new URL(siteConfig.url),
   title: {
-    default: "Frozen Dice — Norwegian D&D Community",
-    template: "%s | Frozen Dice",
+    default: `${siteConfig.name} — ${siteConfig.tagline}`,
+    template: `%s | ${siteConfig.name} - D&D Community`,
   },
-  description:
-    "Frozen Dice is a Norwegian Dungeons & Dragons community offering campaign resources, battle maps, digital products, and tabletop RPG content.",
+  description: siteConfig.description,
   keywords: [
     "D&D",
     "Dungeons and Dragons",
@@ -29,21 +32,27 @@ export const metadata: Metadata = {
     "Norway",
     "battle maps",
     "campaign resources",
+    "homebrew",
+    "digital products",
   ],
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
     type: "website",
-    locale: "en_US",
-    url: "https://frozendice.no",
-    siteName: "Frozen Dice",
-    title: "Frozen Dice — Norwegian D&D Community",
+    locale: siteConfig.locale,
+    url: siteConfig.url,
+    siteName: siteConfig.name,
+    title: `${siteConfig.name} — ${siteConfig.tagline}`,
     description:
       "Campaign resources, battle maps, and digital products for tabletop RPG players.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Frozen Dice — Norwegian D&D Community",
+    title: `${siteConfig.name} — ${siteConfig.tagline}`,
     description:
       "Campaign resources, battle maps, and digital products for tabletop RPG players.",
+    creator: siteConfig.creator,
   },
   robots: {
     index: true,
@@ -61,10 +70,17 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
+      <head>
+        <GoogleTagManager />
+        <OrganizationJsonLd />
+        <WebSiteJsonLd />
+      </head>
       <body className="min-h-full flex flex-col">
+        <GoogleTagManagerNoscript />
         <SiteHeader />
         <main className="flex-1">{children}</main>
         <SiteFooter />
+        <CookieConsent />
       </body>
     </html>
   );
