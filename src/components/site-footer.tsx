@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Dice5 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { NewsletterSignup } from "@/components/newsletter-signup";
 
 export function SiteFooter() {
   return (
@@ -36,11 +37,8 @@ export function SiteFooter() {
           </div>
 
           <div>
-            <h3 className="mb-3 text-sm font-semibold">Legal</h3>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><Link href="/privacy" className="hover:text-foreground">Privacy Policy</Link></li>
-              <li><Link href="/terms" className="hover:text-foreground">Terms of Service</Link></li>
-            </ul>
+            <h3 className="mb-3 text-sm font-semibold">Stay Updated</h3>
+            <NewsletterSignup />
           </div>
         </div>
 

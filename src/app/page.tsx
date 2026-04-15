@@ -8,6 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { NewsletterSignup } from "@/components/newsletter-signup";
 import { cn } from "@/lib/utils";
 
 const features = [
@@ -106,18 +107,10 @@ export default function HomePage() {
               Join the Community
             </h2>
             <p className="mt-4 text-muted-foreground">
-              Stay updated with new releases, campaign tips, and exclusive
-              content from Frozen Dice.
+              Get new battle maps, campaign tips, and exclusive content delivered
+              to your inbox.
             </p>
-            <div className="mt-8">
-              <Link
-                href="/blog"
-                className={cn(buttonVariants({ size: "lg" }), "gap-2")}
-              >
-                Get Started
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </div>
+            <NewsletterSignup className="mt-8 mx-auto max-w-md" />
           </div>
         </div>
       </section>
