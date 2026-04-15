@@ -50,6 +50,30 @@ export const blogPosts = pgTable("blog_posts", {
     .defaultNow(),
 });
 
+export const orderStatusEnum = pgEnum("order_status", [
+  "pending",
+  "completed",
+  "refunded",
+]);
+
+export const orders = pgTable("orders", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  productId: uuid("product_id")
+    .notNull()
+    .references(() => products.id),
+  customerEmail: text("customer_email").notNull(),
+  stripeSessionId: text("stripe_session_id").unique(),
+  stripePaymentIntentId: text("stripe_payment_intent_id"),
+  amountInCents: integer("amount_in_cents").notNull(),
+  status: orderStatusEnum("status").notNull().default("pending"),
+  downloadToken: text("download_token").unique(),
+  downloadExpiresAt: timestamp("download_expires_at", { withTimezone: true }),
+  downloadCount: integer("download_count").notNull().default(0),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+});
+
 export const subscribers = pgTable("subscribers", {
   id: uuid("id").defaultRandom().primaryKey(),
   email: text("email").notNull().unique(),
