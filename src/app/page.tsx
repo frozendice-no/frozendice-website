@@ -41,7 +41,7 @@ export default function HomePage() {
           <div className="mx-auto max-w-2xl text-center">
             <div className="mb-6 flex justify-center">
               <div className="rounded-2xl bg-primary/10 p-4">
-                <Dice5 className="h-12 w-12 text-primary sm:h-16 sm:w-16" />
+                <Dice5 aria-hidden="true" className="h-12 w-12 text-primary sm:h-16 sm:w-16" />
               </div>
             </div>
             <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
@@ -61,7 +61,7 @@ export default function HomePage() {
                 className={cn(buttonVariants({ size: "lg" }), "gap-2")}
               >
                 Browse the Store
-                <ArrowRight className="h-4 w-4" />
+                <ArrowRight aria-hidden="true" className="h-4 w-4" />
               </Link>
               <Link
                 href="/blog"
@@ -92,7 +92,7 @@ export default function HomePage() {
                 className="border-0 bg-background shadow-sm"
               >
                 <CardHeader>
-                  <feature.icon className="mb-2 h-10 w-10 text-primary" />
+                  <feature.icon aria-hidden="true" className="mb-2 h-10 w-10 text-primary" />
                   <CardTitle>{feature.title}</CardTitle>
                 </CardHeader>
                 <CardContent>

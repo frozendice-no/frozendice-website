@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { Calendar, Clock } from "lucide-react";
 import {
@@ -15,9 +16,11 @@ export function BlogCard({ post }: { post: BlogPostMeta }) {
       <Card className="h-full border-0 bg-muted/30 transition-colors group-hover:bg-muted/50">
         {post.coverImage && (
           <div className="overflow-hidden rounded-t-lg">
-            <img
+            <Image
               src={post.coverImage}
               alt={post.title}
+              width={640}
+              height={360}
               className="aspect-video w-full object-cover transition-transform group-hover:scale-105"
             />
           </div>
@@ -41,7 +44,7 @@ export function BlogCard({ post }: { post: BlogPostMeta }) {
           </CardDescription>
           <div className="mt-4 flex items-center gap-4 text-xs text-muted-foreground">
             <span className="flex items-center gap-1">
-              <Calendar className="h-3 w-3" />
+              <Calendar aria-hidden="true" className="h-3 w-3" />
               {new Date(post.publishedAt).toLocaleDateString("en-US", {
                 year: "numeric",
                 month: "short",
@@ -49,7 +52,7 @@ export function BlogCard({ post }: { post: BlogPostMeta }) {
               })}
             </span>
             <span className="flex items-center gap-1">
-              <Clock className="h-3 w-3" />
+              <Clock aria-hidden="true" className="h-3 w-3" />
               {post.readingTime}
             </span>
           </div>

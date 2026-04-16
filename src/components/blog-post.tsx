@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { Calendar, Clock, User } from "lucide-react";
 import { BreadcrumbJsonLd, JsonLd } from "@/components/json-ld";
@@ -56,11 +57,11 @@ export function BlogPostContent({ post }: { post: BlogPostType }) {
           <p className="mt-4 text-lg text-muted-foreground">{post.excerpt}</p>
           <div className="mt-6 flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
             <span className="flex items-center gap-1">
-              <User className="h-4 w-4" />
+              <User aria-hidden="true" className="h-4 w-4" />
               {post.author}
             </span>
             <span className="flex items-center gap-1">
-              <Calendar className="h-4 w-4" />
+              <Calendar aria-hidden="true" className="h-4 w-4" />
               {new Date(post.publishedAt).toLocaleDateString("en-US", {
                 year: "numeric",
                 month: "long",
@@ -68,16 +69,19 @@ export function BlogPostContent({ post }: { post: BlogPostType }) {
               })}
             </span>
             <span className="flex items-center gap-1">
-              <Clock className="h-4 w-4" />
+              <Clock aria-hidden="true" className="h-4 w-4" />
               {post.readingTime}
             </span>
           </div>
         </header>
 
         {post.coverImage && (
-          <img
+          <Image
             src={post.coverImage}
             alt={post.title}
+            width={960}
+            height={540}
+            priority
             className="mb-10 aspect-video w-full rounded-lg object-cover"
           />
         )}

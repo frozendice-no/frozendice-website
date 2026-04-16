@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useId } from "react";
 import { subscribe } from "@/app/actions/subscribe";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -18,6 +18,9 @@ async function subscribeAction(_prev: State, formData: FormData): Promise<State>
 
 export function NewsletterSignup({ className }: { className?: string }) {
   const [state, action, pending] = useActionState(subscribeAction, null);
+  const id = useId();
+  const emailId = `${id}-email`;
+  const errorId = `${id}-error`;
 
   if (state?.success) {
     return (
@@ -33,11 +36,16 @@ export function NewsletterSignup({ className }: { className?: string }) {
   return (
     <form action={action} className={cn("space-y-3", className)}>
       <div className="flex gap-2">
+        <label htmlFor={emailId} className="sr-only">
+          Email address
+        </label>
         <input
+          id={emailId}
           type="email"
           name="email"
           required
           placeholder="your@email.com"
+          aria-describedby={state?.error ? errorId : undefined}
           className="flex-1 rounded-md border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
         />
         <input
@@ -56,7 +64,7 @@ export function NewsletterSignup({ className }: { className?: string }) {
         </button>
       </div>
       {state?.error && (
-        <p className="text-sm text-destructive">{state.error}</p>
+        <p id={errorId} role="alert" className="text-sm text-destructive">{state.error}</p>
       )}
       <p className="text-xs text-muted-foreground">
         No spam. Unsubscribe anytime.

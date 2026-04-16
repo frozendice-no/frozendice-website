@@ -11,7 +11,7 @@ export function SiteFooter() {
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
           <div className="space-y-3">
             <Link href="/" className="flex items-center gap-2 font-bold text-lg">
-              <Dice5 className="h-5 w-5 text-primary" />
+              <Dice5 aria-hidden="true" className="h-5 w-5 text-primary" />
               Frozen Dice
             </Link>
             <p className="text-sm text-muted-foreground">
@@ -21,14 +21,14 @@ export function SiteFooter() {
             <SocialLinks className="mt-4" />
           </div>
 
-          <div>
+          <nav aria-label="Footer">
             <h3 className="mb-3 text-sm font-semibold">Explore</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li><Link href="/blog" className="hover:text-foreground">Blog</Link></li>
               <li><Link href="/store" className="hover:text-foreground">Store</Link></li>
               <li><Link href="/about" className="hover:text-foreground">About</Link></li>
             </ul>
-          </div>
+          </nav>
 
           <div>
             <h3 className="mb-3 text-sm font-semibold">Resources</h3>

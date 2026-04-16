@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getProductBySlug, formatPrice } from "@/lib/store";
 import { BreadcrumbJsonLd, JsonLd } from "@/components/json-ld";
@@ -63,9 +64,12 @@ export default async function ProductPage({ params }: Props) {
         <div className="grid gap-10 md:grid-cols-2">
           {product.imageUrl && (
             <div className="overflow-hidden rounded-lg">
-              <img
+              <Image
                 src={product.imageUrl}
                 alt={product.name}
+                width={640}
+                height={480}
+                priority
                 className="aspect-[4/3] w-full object-cover"
               />
             </div>

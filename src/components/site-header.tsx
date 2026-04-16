@@ -26,11 +26,11 @@ export function SiteHeader() {
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link href="/" className="flex items-center gap-2 font-bold text-lg">
-          <Dice5 className="h-6 w-6 text-primary" />
+          <Dice5 aria-hidden="true" className="h-6 w-6 text-primary" />
           <span>Frozen Dice</span>
         </Link>
 
-        <nav className="hidden items-center gap-6 md:flex">
+        <nav aria-label="Main" className="hidden items-center gap-6 md:flex">
           {navLinks.map((link) => (
             <Link
               key={link.href}
@@ -62,11 +62,11 @@ export function SiteHeader() {
           <SheetContent side="right" className="w-72">
             <SheetHeader>
               <SheetTitle className="flex items-center gap-2">
-                <Dice5 className="h-5 w-5 text-primary" />
+                <Dice5 aria-hidden="true" className="h-5 w-5 text-primary" />
                 Frozen Dice
               </SheetTitle>
             </SheetHeader>
-            <nav className="mt-8 flex flex-col gap-4 px-4">
+            <nav aria-label="Mobile" className="mt-8 flex flex-col gap-4 px-4">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}

@@ -9,6 +9,7 @@ export const metadata: Metadata = {
   title: "About",
   description:
     "Frozen Dice is a Norwegian D&D community creating premium tabletop RPG content — battle maps, campaign guides, and digital resources.",
+  alternates: { canonical: "/about" },
 };
 
 export default function AboutPage() {
@@ -17,7 +18,7 @@ export default function AboutPage() {
       <section className="py-24 sm:py-32">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-2xl text-center">
-            <Dice5 className="mx-auto mb-6 h-16 w-16 text-primary" />
+            <Dice5 aria-hidden="true" className="mx-auto mb-6 h-16 w-16 text-primary" />
             <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
               About Frozen Dice
             </h1>
@@ -52,14 +53,14 @@ export default function AboutPage() {
 
             <div className="grid gap-8 sm:grid-cols-2">
               <div className="space-y-2">
-                <MapPin className="h-8 w-8 text-primary" />
+                <MapPin aria-hidden="true" className="h-8 w-8 text-primary" />
                 <h3 className="font-semibold">Based in Norway</h3>
                 <p className="text-sm text-muted-foreground">
                   Creating content inspired by Nordic landscapes and mythology.
                 </p>
               </div>
               <div className="space-y-2">
-                <Users className="h-8 w-8 text-primary" />
+                <Users aria-hidden="true" className="h-8 w-8 text-primary" />
                 <h3 className="font-semibold">Community First</h3>
                 <p className="text-sm text-muted-foreground">
                   Built by dungeon masters who play every week and know what
@@ -67,7 +68,7 @@ export default function AboutPage() {
                 </p>
               </div>
               <div className="space-y-2">
-                <Heart className="h-8 w-8 text-primary" />
+                <Heart aria-hidden="true" className="h-8 w-8 text-primary" />
                 <h3 className="font-semibold">Made with Care</h3>
                 <p className="text-sm text-muted-foreground">
                   Every map, guide, and resource is crafted and playtested before
@@ -75,7 +76,7 @@ export default function AboutPage() {
                 </p>
               </div>
               <div className="space-y-2">
-                <Dice5 className="h-8 w-8 text-primary" />
+                <Dice5 aria-hidden="true" className="h-8 w-8 text-primary" />
                 <h3 className="font-semibold">Always Rolling</h3>
                 <p className="text-sm text-muted-foreground">
                   New content every month &mdash; maps, encounters, and campaign

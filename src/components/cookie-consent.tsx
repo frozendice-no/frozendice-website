@@ -28,7 +28,7 @@ export function CookieConsent() {
   if (!visible) return null;
 
   return (
-    <div className="fixed inset-x-0 bottom-0 z-50 border-t bg-background p-4 shadow-lg sm:flex sm:items-center sm:justify-between sm:gap-4 sm:px-6">
+    <div role="region" aria-label="Cookie consent" className="fixed inset-x-0 bottom-0 z-50 border-t bg-background p-4 shadow-lg sm:flex sm:items-center sm:justify-between sm:gap-4 sm:px-6">
       <p className="text-sm text-muted-foreground">
         We use cookies and analytics to improve your experience. By continuing,
         you agree to our{" "}

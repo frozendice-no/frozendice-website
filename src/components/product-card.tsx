@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import {
   Card,
@@ -21,9 +22,11 @@ export function ProductCard({ product }: { product: Product }) {
       <Card className="h-full border-0 bg-muted/30 transition-colors group-hover:bg-muted/50">
         {product.imageUrl && (
           <div className="overflow-hidden rounded-t-lg">
-            <img
+            <Image
               src={product.imageUrl}
               alt={product.name}
+              width={640}
+              height={480}
               className="aspect-[4/3] w-full object-cover transition-transform group-hover:scale-105"
             />
           </div>
