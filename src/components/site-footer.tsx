@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Dice5 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { NewsletterSignup } from "@/components/newsletter-signup";
+import { SocialLinks } from "@/components/social-links";
 
 export function SiteFooter() {
   return (
@@ -17,6 +18,7 @@ export function SiteFooter() {
               Your Norwegian D&amp;D community for adventures, maps, and digital
               resources.
             </p>
+            <SocialLinks className="mt-4" />
           </div>
 
           <div>

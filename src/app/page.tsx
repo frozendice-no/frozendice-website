@@ -35,19 +35,25 @@ const features = [
 export default function HomePage() {
   return (
     <>
-      <section className="relative overflow-hidden py-24 sm:py-32 lg:py-40">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+      <section className="relative overflow-hidden bg-gradient-to-b from-primary/5 via-background to-background py-24 sm:py-32 lg:py-40">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,hsl(var(--primary)/0.08),transparent_70%)]" />
+        <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-2xl text-center">
             <div className="mb-6 flex justify-center">
-              <Dice5 className="h-16 w-16 text-primary" />
+              <div className="rounded-2xl bg-primary/10 p-4">
+                <Dice5 className="h-12 w-12 text-primary sm:h-16 sm:w-16" />
+              </div>
             </div>
             <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
               Roll into Adventure
             </h1>
+            <p className="mt-2 text-lg font-medium text-primary/80">
+              Norwegian D&amp;D Community &amp; Creator Hub
+            </p>
             <p className="mt-6 text-lg leading-8 text-muted-foreground">
-              Frozen Dice is a Norwegian D&amp;D community dedicated to
-              creating premium tabletop RPG content — from battle maps to
-              complete campaign guides.
+              Premium battle maps, campaign guides, and tabletop RPG
+              resources — crafted by dungeon masters in Norway, built for
+              tables everywhere.
             </p>
             <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Link
