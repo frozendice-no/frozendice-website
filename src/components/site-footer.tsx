@@ -26,6 +26,7 @@ export function SiteFooter() {
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li><Link href="/blog" className="hover:text-foreground">Blog</Link></li>
               <li><Link href="/store" className="hover:text-foreground">Store</Link></li>
+              <li><Link href="/tools" className="hover:text-foreground">Tools</Link></li>
               <li><Link href="/about" className="hover:text-foreground">About</Link></li>
             </ul>
           </nav>

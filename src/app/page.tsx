@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Map, BookOpen, ShoppingBag, ArrowRight, Dice5 } from "lucide-react";
+import { Map, BookOpen, ShoppingBag, ArrowRight, Dice5, Sparkles } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import {
   Card,
@@ -106,17 +106,42 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="py-20 sm:py-28">
+      <section id="newsletter" className="py-20 sm:py-28">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-xl text-center">
-            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-              Join the Community
-            </h2>
-            <p className="mt-4 text-muted-foreground">
-              Get new battle maps, campaign tips, and exclusive content delivered
-              to your inbox.
-            </p>
-            <NewsletterSignup className="mt-8 mx-auto max-w-md" />
+          <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+            <div className="rounded-3xl border bg-gradient-to-br from-primary/10 via-background to-background p-8 shadow-sm sm:p-10">
+              <div className="mb-4 flex items-center gap-3 text-sm font-medium text-primary">
+                <Sparkles aria-hidden="true" className="h-5 w-5" />
+                Free Tools
+              </div>
+              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+                Built for quick table-side wins
+              </h2>
+              <p className="mt-4 max-w-xl text-muted-foreground">
+                Explore the new free tools section for practical helpers that make
+                prep faster and sessions smoother.
+              </p>
+              <div className="mt-8">
+                <Link
+                  href="/tools"
+                  className={cn(buttonVariants({ size: "lg" }), "gap-2")}
+                >
+                  Explore Free Tools
+                  <ArrowRight aria-hidden="true" className="h-4 w-4" />
+                </Link>
+              </div>
+            </div>
+
+            <div className="mx-auto max-w-xl text-center lg:text-left">
+              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+                Join the Community
+              </h2>
+              <p className="mt-4 text-muted-foreground">
+                Get new battle maps, campaign tips, and exclusive content delivered
+                to your inbox.
+              </p>
+              <NewsletterSignup className="mt-8 mx-auto max-w-md lg:mx-0" />
+            </div>
           </div>
         </div>
       </section>
