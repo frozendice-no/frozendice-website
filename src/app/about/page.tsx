@@ -3,7 +3,6 @@ import Link from "next/link";
 import { Dice5, Users, Heart, MapPin } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import { NewsletterSignup } from "@/components/newsletter-signup";
-import { siteConfig } from "@/lib/site-config";
 
 export const metadata: Metadata = {
   title: "About",

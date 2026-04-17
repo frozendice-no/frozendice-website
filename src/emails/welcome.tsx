@@ -20,10 +20,10 @@ export function WelcomeEmail() {
         <Container style={container}>
           <Heading style={heading}>Welcome to Frozen Dice!</Heading>
           <Text style={text}>
-            Thanks for joining our community of tabletop RPG enthusiasts. We're
+            Thanks for joining our community of tabletop RPG enthusiasts. We&apos;re
             glad to have you.
           </Text>
-          <Text style={text}>Here's what you can expect from us:</Text>
+          <Text style={text}>Here&apos;s what you can expect from us:</Text>
           <Section style={list}>
             <Text style={listItem}>
               New blog posts about D&D tips, homebrew content, and session recaps

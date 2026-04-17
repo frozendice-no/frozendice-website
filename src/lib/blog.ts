@@ -49,8 +49,19 @@ export function getAllPosts(): BlogPostMeta[] {
     .readdirSync(BLOG_DIR)
     .filter((f) => f.endsWith(".mdx"))
     .map((f) => {
-      const { content: _, ...meta } = parseMdxFile(path.join(BLOG_DIR, f));
-      return meta;
+      const post = parseMdxFile(path.join(BLOG_DIR, f));
+      return {
+        slug: post.slug,
+        title: post.title,
+        excerpt: post.excerpt,
+        coverImage: post.coverImage,
+        publishedAt: post.publishedAt,
+        updatedAt: post.updatedAt,
+        tags: post.tags,
+        categories: post.categories,
+        author: post.author,
+        readingTime: post.readingTime,
+      };
     })
     .sort(
       (a, b) =>

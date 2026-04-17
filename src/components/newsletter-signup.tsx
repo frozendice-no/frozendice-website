@@ -25,7 +25,7 @@ export function NewsletterSignup({ className }: { className?: string }) {
   if (state?.success) {
     return (
       <div className={cn("rounded-lg bg-primary/5 p-6 text-center", className)}>
-        <p className="font-medium text-primary">You're in!</p>
+        <p className="font-medium text-primary">You&apos;re in!</p>
         <p className="mt-1 text-sm text-muted-foreground">
           Check your inbox for a welcome email from Frozen Dice.
         </p>

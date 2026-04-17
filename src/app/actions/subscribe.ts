@@ -36,7 +36,7 @@ export async function subscribe(formData: FormData): Promise<SubscribeResult> {
   if (resend) {
     try {
       await resend.emails.send({
-        from: process.env.RESEND_FROM_EMAIL ?? "Frozen Dice <hello@frozendice.no>",
+        from: process.env.RESEND_FROM_EMAIL ?? "Frozen Dice <hello@send.frozendice.no>",
         to: trimmed,
         subject: "Welcome to Frozen Dice!",
         react: WelcomeEmail(),
