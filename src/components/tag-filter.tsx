@@ -1,13 +1,14 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
+import type { TagRef } from "@/sanity/types";
 
-export function CategoryFilter({
-  categories,
-  activeCategory,
+export function TagFilter({
+  tags,
+  activeTagSlug,
 }: {
-  categories: string[];
-  activeCategory?: string;
+  tags: TagRef[];
+  activeTagSlug?: string;
 }) {
   return (
     <div className="flex flex-wrap gap-2">
@@ -15,28 +16,25 @@ export function CategoryFilter({
         href="/blog"
         className={cn(
           buttonVariants({
-            variant: activeCategory ? "outline" : "default",
+            variant: activeTagSlug ? "outline" : "default",
             size: "sm",
           }),
         )}
       >
         All
       </Link>
-      {categories.map((cat) => (
+      {tags.map((tag) => (
         <Link
-          key={cat}
-          href={`/blog/category/${encodeURIComponent(cat.toLowerCase())}`}
+          key={tag._id}
+          href={`/blog/tag/${tag.slug}`}
           className={cn(
             buttonVariants({
-              variant:
-                activeCategory?.toLowerCase() === cat.toLowerCase()
-                  ? "default"
-                  : "outline",
+              variant: activeTagSlug === tag.slug ? "default" : "outline",
               size: "sm",
             }),
           )}
         >
-          {cat}
+          {tag.name}
         </Link>
       ))}
     </div>
