@@ -13,6 +13,10 @@ import { createClient } from "next-sanity";
 import fs from "node:fs";
 import path from "node:path";
 import matter from "gray-matter";
+import { htmlToBlocks } from "@sanity/block-tools";
+import { Schema } from "@sanity/schema";
+import { marked } from "marked";
+import { JSDOM } from "jsdom";
 
 const DRY_RUN = !process.argv.includes("--apply");
 const BLOG_DIR = path.join(process.cwd(), "content/blog");
@@ -42,6 +46,34 @@ function slugify(raw: string): string {
     .replace(/[^\w\s-]/g, "")
     .replace(/\s+/g, "-")
     .replace(/-+/g, "-");
+}
+
+const blockContentSchema = Schema.compile({
+  name: "postBody",
+  types: [
+    {
+      type: "object",
+      name: "code",
+      fields: [{ name: "code", type: "string" }, { name: "language", type: "string" }],
+    },
+    {
+      type: "object",
+      name: "patreonCta",
+      fields: [{ name: "text", type: "string" }],
+    },
+    {
+      type: "array",
+      name: "body",
+      of: [{ type: "block" }, { type: "image" }, { type: "code" }, { type: "patreonCta" }],
+    },
+  ],
+}).get("body");
+
+async function markdownToPortableText(markdown: string): Promise<unknown[]> {
+  const html = await marked.parse(markdown);
+  return htmlToBlocks(html, blockContentSchema, {
+    parseHtml: (rawHtml) => new JSDOM(rawHtml).window.document,
+  });
 }
 
 async function upsertDoc(doc: Record<string, unknown> & { _id: string; _type: string }) {
@@ -103,8 +135,39 @@ async function main() {
   console.log(`Tag refs: ${tagIdBySlug.size}`);
   console.log("");
 
-  // Task 12 fills in post upsert loop.
-  console.log("(posts not yet imported — that's Task 12)");
+  for (const file of files) {
+    const filePath = path.join(BLOG_DIR, file);
+    const raw = fs.readFileSync(filePath, "utf-8");
+    const { data, content } = matter(raw);
+
+    const slug = path.basename(file, ".mdx");
+    const postId = `post-${slug}`;
+    const tagNames: string[] = [...(data.tags ?? []), ...(data.categories ?? [])];
+    const tagRefs = tagNames
+      .map((n) => tagIdBySlug.get(slugify(n)))
+      .filter((id): id is string => Boolean(id))
+      .map((id) => ({ _type: "reference", _ref: id, _key: id }));
+
+    const body = await markdownToPortableText(content);
+
+    console.log(`  post-${slug}  (tags: ${tagNames.length}, body blocks: ${body.length})`);
+
+    await upsertDoc({
+      _id: postId,
+      _type: "post",
+      title: data.title ?? slug,
+      slug: { _type: "slug", current: slug },
+      excerpt: data.excerpt ?? "",
+      publishedAt: data.publishedAt ? new Date(data.publishedAt).toISOString() : new Date().toISOString(),
+      featured: false,
+      author: { _type: "reference", _ref: authorId },
+      tags: tagRefs,
+      body,
+    });
+  }
+
+  console.log("");
+  console.log(DRY_RUN ? "Dry run complete. No changes written." : "Import complete.");
 }
 
 main().catch((err) => {
