@@ -45,3 +45,5 @@ next-env.d.ts
 # lockfile guard: this project uses pnpm; reject accidental npm installs
 package-lock.json
 yarn.lock
+
+.env*.local
