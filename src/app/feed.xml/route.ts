@@ -1,8 +1,8 @@
-import { getAllPosts } from "@/lib/blog";
+import { getAllPosts } from "@/sanity/queries";
 import { siteConfig } from "@/lib/site-config";
 
 export async function GET() {
-  const posts = getAllPosts();
+  const posts = await getAllPosts();
 
   const items = posts
     .map(
@@ -13,7 +13,7 @@ export async function GET() {
       <guid isPermaLink="true">${siteConfig.url}/blog/${post.slug}</guid>
       <description><![CDATA[${post.excerpt}]]></description>
       <pubDate>${new Date(post.publishedAt).toUTCString()}</pubDate>
-      ${post.categories.map((c) => `<category>${c}</category>`).join("\n      ")}
+      ${post.tags.map((t) => `<category>${t.name}</category>`).join("\n      ")}
     </item>`,
     )
     .join("");
