@@ -27,6 +27,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     }
 
     revalidateTag(body._type, { expire: 0 });
+    console.log(`Revalidated tag: ${body._type}`);
 
     return NextResponse.json({ revalidated: body._type });
   } catch (err) {
