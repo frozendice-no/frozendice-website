@@ -1,36 +1,43 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# FrozenDice website
 
-## Getting Started
+Marketing site for FrozenDice — a Nordic D&D streaming brand. Built with Next.js 16, shadcn/ui, Tailwind v4, Stripe, Resend, and Sanity.
 
-First, run the development server:
+## Prerequisites
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- Node.js 20+
+- A Sanity account and project ([sanity.io/manage](https://www.sanity.io/manage))
+- A Stripe account
+- A Resend account
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Setup
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Install dependencies:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+   ```bash
+   pnpm install
+   ```
 
-## Learn More
+2. Pull env vars from Vercel (project must be linked with `vercel link`):
 
-To learn more about Next.js, take a look at the following resources:
+   ```bash
+   vercel env pull .env.local
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+   Then append any non-Vercel-managed values (e.g. `SANITY_WEBHOOK_SECRET`) — see `.env.example` for the shape.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+3. Run the dev server:
 
-## Deploy on Vercel
+   ```bash
+   pnpm dev
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+   - Site: http://localhost:3000
+   - Sanity Studio: http://localhost:3000/studio
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Architecture
+
+See [docs/superpowers/specs/2026-04-19-frozendice-redesign-design.md](docs/superpowers/specs/2026-04-19-frozendice-redesign-design.md) for the design spec and [docs/superpowers/plans/](docs/superpowers/plans/) for phased implementation plans.
+
+## Deployment
+
+Deploys to Vercel. All environment variables from `.env.example` must be set in the Vercel project. The Sanity webhook (`/api/revalidate`) must point at the deployed domain; see the "Task 23" entry in the Phase 1 plan for the setup procedure.
