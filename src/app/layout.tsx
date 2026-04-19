@@ -1,10 +1,5 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { SiteHeader } from "@/components/site-header";
-import { SiteFooter } from "@/components/site-footer";
-import { GoogleTagManager, GoogleTagManagerNoscript } from "@/components/google-tag-manager";
-import { CookieConsent } from "@/components/cookie-consent";
-import { OrganizationJsonLd, WebSiteJsonLd } from "@/components/json-ld";
 import { siteConfig } from "@/lib/site-config";
 import "./globals.css";
 
@@ -70,24 +65,7 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <head>
-        <GoogleTagManager />
-        <OrganizationJsonLd />
-        <WebSiteJsonLd />
-      </head>
-      <body className="min-h-full flex flex-col">
-        <GoogleTagManagerNoscript />
-        <a
-          href="#main-content"
-          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground focus:outline-none"
-        >
-          Skip to main content
-        </a>
-        <SiteHeader />
-        <main id="main-content" className="flex-1">{children}</main>
-        <SiteFooter />
-        <CookieConsent />
-      </body>
+      <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );
 }
