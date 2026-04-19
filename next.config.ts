@@ -7,12 +7,13 @@ const nextConfig: NextConfig = {
     ],
   },
   async redirects() {
-    // 301 redirect mapping for existing Wix URLs.
-    // Add entries here as: { source, destination, permanent: true }
+    // Post-migration: categories were merged into tags. Redirect old URLs.
     return [
-      // Example:
-      // { source: "/home", destination: "/", permanent: true },
-      // { source: "/my-blog/:slug", destination: "/blog/:slug", permanent: true },
+      {
+        source: "/blog/category/:category",
+        destination: "/blog/tag/:category",
+        permanent: true,
+      },
     ];
   },
 };
