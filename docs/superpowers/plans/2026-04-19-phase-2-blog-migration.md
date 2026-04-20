@@ -146,7 +146,7 @@ These types match the GROQ projection shapes in Task 4 so components get strong 
 
 ```typescript
 import type { PortableTextBlock } from "@portabletext/react";
-import type { SanityImageSource } from "@sanity/image-url/lib/types/types";
+import type { SanityImageSource } from "@sanity/image-url";
 
 export type SanityImage = SanityImageSource & {
   alt?: string;
