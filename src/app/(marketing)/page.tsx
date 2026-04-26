@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { HeroSection } from "@/components/landing/hero-section";
 import type { BlogPreview } from "@/components/landing/hero-copy-overlay";
 import { siteConfig } from "@/lib/site-config";
-import { getAllPosts } from "@/sanity/queries";
+import { getAllPosts, getStreamSchedule } from "@/sanity/queries";
 import { urlForImage } from "@/sanity/image";
 import type { PostCard } from "@/sanity/types";
 
@@ -38,7 +38,10 @@ function toBlogPreview(post: PostCard): BlogPreview {
 }
 
 export default async function HomePage() {
-  const allPosts = await getAllPosts();
+  const [allPosts, streamSchedule] = await Promise.all([
+    getAllPosts(),
+    getStreamSchedule(),
+  ]);
   const blogPreviews = allPosts.slice(0, 3).map(toBlogPreview);
 
   return (
@@ -64,9 +67,12 @@ export default async function HomePage() {
         fetchPriority="high"
       />
 
-      <HeroSection blogPreviews={blogPreviews} />
+      <HeroSection
+        blogPreviews={blogPreviews}
+        streamSchedule={streamSchedule}
+      />
 
-      {/* TODO(phase-4): add Patreon, Streams, Featured Products as sections following the hero, when each iteration lands. */}
+      {/* TODO: add /api/revalidate handling for streamSchedule + featuredVods tags when those Sanity types are wired into the webhook. */}
     </>
   );
 }

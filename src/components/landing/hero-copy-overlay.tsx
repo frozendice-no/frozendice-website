@@ -2,9 +2,11 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { motion, useTransform, type MotionValue } from "framer-motion";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import type { StreamSchedule } from "@/sanity/types";
 
 const PATREON_URL = "https://www.patreon.com/c/FrozenDice";
 const YOUTUBE_FALLBACK = "https://www.youtube.com/@FrozenDice_no";
@@ -30,6 +32,7 @@ function youtubeChannelUrl(): string {
 type StageRenderContext = {
   scrollYProgress: MotionValue<number>;
   blogPreviews: BlogPreview[];
+  streamSchedule: StreamSchedule | null;
 };
 
 type Stage = {
@@ -79,7 +82,7 @@ const stages: Stage[] = [
     inEnd: 0.8,
     outStart: 0.95,
     outEnd: 1.0,
-    render: () => <Stage4Streams />,
+    render: (ctx) => <Stage4Streams schedule={ctx.streamSchedule} />,
   },
 ];
 
@@ -233,30 +236,139 @@ function BlogPreviewCard({ post }: { post: BlogPreview }) {
   );
 }
 
-function Stage4Streams() {
+function Stage4Streams({ schedule }: { schedule: StreamSchedule | null }) {
+  // Embed channelId from Sanity (editor-controlled) with fallback to the
+  // public env var so the embed still renders if the schedule singleton
+  // hasn't been published yet.
+  const channelId =
+    schedule?.youtubeChannelId ??
+    process.env.NEXT_PUBLIC_YOUTUBE_CHANNEL_ID ??
+    "";
+
   return (
-    <div className="hero-text-outline pointer-events-auto max-w-xl">
-      <p className="mb-3 text-sm font-semibold uppercase tracking-widest text-white/80">
-        Live &amp; on-demand
-      </p>
-      <h2 className="text-4xl font-bold tracking-tight sm:text-5xl">
-        Watch the saga unfold.
-      </h2>
-      <p className="mt-4 text-lg text-white/90">
-        Original campaigns streamed weekly. Catch up on past sessions, or tune
-        in live.
-      </p>
-      <Link
-        href={youtubeChannelUrl()}
-        target="_blank"
-        rel="noopener noreferrer"
-        className={cn(buttonVariants({ size: "lg" }), "mt-8")}
-      >
-        Subscribe on YouTube →
-      </Link>
-      {/* TODO(iteration-4): YouTube embed + LIVE pill + schedule + VOD grid. */}
+    <div className="grid w-full grid-cols-1 items-center gap-12 lg:grid-cols-2">
+      <div className="hero-text-outline pointer-events-auto max-w-xl">
+        <p className="mb-3 text-sm font-semibold uppercase tracking-widest text-white/80">
+          Live &amp; on-demand
+        </p>
+        <h2 className="text-4xl font-bold tracking-tight sm:text-5xl">
+          Watch the saga unfold.
+        </h2>
+        <p className="mt-4 text-lg text-white/90">
+          Original campaigns streamed weekly. Catch up on past sessions, or tune
+          in live.
+        </p>
+        <Link
+          href={youtubeChannelUrl()}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={cn(buttonVariants({ size: "lg" }), "mt-8")}
+        >
+          Subscribe on YouTube →
+        </Link>
+
+        {schedule?.upcoming && schedule.upcoming.length > 0 && (
+          <div className="mt-6 space-y-2">
+            <h3 className="text-xs font-semibold uppercase tracking-widest text-white/80">
+              Upcoming
+            </h3>
+            {schedule.upcoming.slice(0, 2).map((session) => (
+              <div
+                key={session._key}
+                className="rounded-lg border border-white/30 bg-white/10 p-3 backdrop-blur-sm"
+              >
+                <p className="text-sm font-semibold">{session.title}</p>
+                <time
+                  dateTime={session.scheduledAt}
+                  className="text-xs text-white/80"
+                >
+                  {new Date(session.scheduledAt).toLocaleString("en-US", {
+                    weekday: "long",
+                    month: "short",
+                    day: "numeric",
+                    hour: "numeric",
+                    minute: "2-digit",
+                  })}
+                </time>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div className="pointer-events-auto hidden lg:block">
+        {channelId ? (
+          <YouTubeLiveEmbed channelId={channelId} />
+        ) : (
+          <div className="flex aspect-video w-full items-center justify-center rounded-xl bg-white/10 text-sm text-white/70 backdrop-blur-sm">
+            Stream embed coming soon.
+          </div>
+        )}
+      </div>
     </div>
   );
+}
+
+function YouTubeLiveEmbed({ channelId }: { channelId: string }) {
+  const isLive = useLiveStatus(channelId);
+
+  return (
+    <div className="relative overflow-hidden rounded-xl shadow-2xl">
+      <div className="aspect-video w-full">
+        <iframe
+          src={`https://www.youtube.com/embed/live_stream?channel=${channelId}&autoplay=0&rel=0`}
+          title="FrozenDice live stream"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+          className="h-full w-full"
+          loading="lazy"
+        />
+      </div>
+      {isLive && (
+        <div
+          aria-label="Live now"
+          className="absolute left-3 top-3 flex items-center gap-2 rounded-full bg-black/70 px-3 py-1 text-sm font-semibold text-white backdrop-blur-sm"
+        >
+          <span className="relative flex h-2.5 w-2.5">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-500 opacity-75" />
+            <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-red-500" />
+          </span>
+          LIVE
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Polls /api/youtube/live-status on mount and every 60 seconds. The route
+// itself is cached for 60s, so the actual YouTube API call only fires once
+// per minute per deploy region.
+function useLiveStatus(channelId: string): boolean {
+  const [isLive, setIsLive] = useState(false);
+
+  useEffect(() => {
+    if (!channelId) return;
+    let cancelled = false;
+
+    async function check() {
+      try {
+        const res = await fetch("/api/youtube/live-status");
+        const data = (await res.json()) as { isLive: boolean };
+        if (!cancelled) setIsLive(data.isLive);
+      } catch {
+        // Network error — keep current state, don't surface anything.
+      }
+    }
+
+    check();
+    const interval = setInterval(check, 60_000);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
+  }, [channelId]);
+
+  return isLive;
 }
 
 const PDF_CARDS: {
@@ -333,10 +445,12 @@ function StageOverlay({
   stage,
   scrollYProgress,
   blogPreviews,
+  streamSchedule,
 }: {
   stage: Stage;
   scrollYProgress: MotionValue<number>;
   blogPreviews: BlogPreview[];
+  streamSchedule: StreamSchedule | null;
 }) {
   // Function-form useTransform: every scroll position maps to an explicit
   // return value. Avoids framer-motion's keyframe-interpolation edge cases
@@ -358,7 +472,7 @@ function StageOverlay({
       style={{ opacity }}
       className="absolute inset-0 flex items-center px-6 sm:px-12 lg:px-24"
     >
-      {stage.render({ scrollYProgress, blogPreviews })}
+      {stage.render({ scrollYProgress, blogPreviews, streamSchedule })}
     </motion.div>
   );
 }
@@ -409,10 +523,12 @@ function ReducedMotionStage1() {
 export function HeroCopyOverlay({
   scrollYProgress,
   blogPreviews,
+  streamSchedule,
   reducedMotion = false,
 }: {
   scrollYProgress: MotionValue<number>;
   blogPreviews: BlogPreview[];
+  streamSchedule: StreamSchedule | null;
   reducedMotion?: boolean;
 }) {
   if (reducedMotion) {
@@ -431,6 +547,7 @@ export function HeroCopyOverlay({
           stage={stage}
           scrollYProgress={scrollYProgress}
           blogPreviews={blogPreviews}
+          streamSchedule={streamSchedule}
         />
       ))}
     </div>

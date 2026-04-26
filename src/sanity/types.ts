@@ -40,3 +40,29 @@ export type PostDetail = PostCard & {
     ogImage?: SanityImage;
   };
 };
+
+// --- Stream schedule singleton ---
+
+export type UpcomingSession = {
+  _key: string;
+  title: string;
+  scheduledAt: string;
+  description?: string;
+};
+
+export type StreamSchedule = {
+  youtubeChannelId: string;
+  upcoming?: UpcomingSession[];
+};
+
+// --- Featured VODs singleton ---
+
+export type Vod = {
+  _key: string;
+  youtubeVideoId: string;
+  title?: string;
+};
+
+export type FeaturedVods = {
+  vods: Vod[];
+};

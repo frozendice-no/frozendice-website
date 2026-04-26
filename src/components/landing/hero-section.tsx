@@ -4,16 +4,22 @@ import { useEffect, useRef, useState } from "react";
 import { useScroll, useTransform } from "framer-motion";
 import { HeroCanvas } from "./hero-canvas";
 import { HeroCopyOverlay, type BlogPreview } from "./hero-copy-overlay";
+import type { StreamSchedule } from "@/sanity/types";
 
 const TOTAL_FRAMES = 121;
 
 export function HeroSection({
   blogPreviews = [],
+  streamSchedule = null,
 }: {
   // Pre-computed serializable post previews from Sanity, fetched on the
   // server in (marketing)/page.tsx. Empty array is acceptable — Stage 3
   // renders a fallback when no posts are available.
   blogPreviews?: BlogPreview[];
+  // Stream schedule singleton from Sanity. Null if the document hasn't
+  // been published yet — Stage 4 falls back to NEXT_PUBLIC_YOUTUBE_CHANNEL_ID
+  // for the embed in that case.
+  streamSchedule?: StreamSchedule | null;
 }) {
   const heroRef = useRef<HTMLDivElement>(null);
   const [reducedMotion, setReducedMotion] = useState(false);
@@ -45,6 +51,7 @@ export function HeroSection({
           <HeroCopyOverlay
             scrollYProgress={scrollYProgress}
             blogPreviews={blogPreviews}
+            streamSchedule={streamSchedule}
             reducedMotion
           />
         </div>
@@ -72,6 +79,7 @@ export function HeroSection({
         <HeroCopyOverlay
           scrollYProgress={scrollYProgress}
           blogPreviews={blogPreviews}
+          streamSchedule={streamSchedule}
         />
       </div>
     </div>
