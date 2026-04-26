@@ -19,6 +19,10 @@ type Stage = {
   inEnd: number;
   outStart: number;
   outEnd: number;
+  // When true, the stage holds opacity 1 for any scroll value below
+  // inStart instead of starting invisible. Used for stage 1 so the intro
+  // headline + CTAs are present on page load before any scroll.
+  visibleAtStart?: boolean;
   render: (scrollYProgress: MotionValue<number>) => React.ReactNode;
 };
 
@@ -31,6 +35,7 @@ const stages: Stage[] = [
     inEnd: 0.03,
     outStart: 0.2,
     outEnd: 0.25,
+    visibleAtStart: true,
     render: () => <Stage1Intro />,
   },
   {
@@ -267,11 +272,20 @@ function StageOverlay({
   stage: Stage;
   scrollYProgress: MotionValue<number>;
 }) {
-  const opacity = useTransform(
-    scrollYProgress,
-    [stage.inStart, stage.inEnd, stage.outStart, stage.outEnd],
-    [0, 1, 1, 0],
-  );
+  // Function-form useTransform: every scroll position maps to an explicit
+  // return value. Avoids framer-motion's keyframe-interpolation edge cases
+  // (extrapolation past last keyframe, degenerate zero-width segments).
+  const opacity = useTransform(scrollYProgress, (value) => {
+    const { inStart, inEnd, outStart, outEnd, visibleAtStart } = stage;
+    if (value <= inStart) return visibleAtStart ? 1 : 0;
+    if (value < inEnd) {
+      if (visibleAtStart) return 1;
+      return (value - inStart) / (inEnd - inStart);
+    }
+    if (value <= outStart) return 1;
+    if (value < outEnd) return 1 - (value - outStart) / (outEnd - outStart);
+    return 0;
+  });
 
   return (
     <motion.div
