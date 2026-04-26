@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { motion, useTransform, type MotionValue } from "framer-motion";
 import { buttonVariants } from "@/components/ui/button";
@@ -8,10 +9,28 @@ import { cn } from "@/lib/utils";
 const PATREON_URL = "https://www.patreon.com/c/FrozenDice";
 const YOUTUBE_FALLBACK = "https://www.youtube.com/@FrozenDice_no";
 
+// Serializable shape passed from the server (page.tsx fetches Sanity, builds
+// these previews, hands them to HeroSection → HeroCopyOverlay → Stage3Blog).
+// All Sanity-specific types are resolved server-side so this Client Component
+// only sees primitive values + the pre-built CDN URL.
+export type BlogPreview = {
+  slug: string;
+  title: string;
+  excerpt: string;
+  coverUrl: string | null;
+  coverAlt: string;
+  publishedAt: string;
+};
+
 function youtubeChannelUrl(): string {
   const id = process.env.NEXT_PUBLIC_YOUTUBE_CHANNEL_ID;
   return id ? `https://www.youtube.com/channel/${id}` : YOUTUBE_FALLBACK;
 }
+
+type StageRenderContext = {
+  scrollYProgress: MotionValue<number>;
+  blogPreviews: BlogPreview[];
+};
 
 type Stage = {
   id: string;
@@ -23,7 +42,7 @@ type Stage = {
   // inStart instead of starting invisible. Used for stage 1 so the intro
   // headline + CTAs are present on page load before any scroll.
   visibleAtStart?: boolean;
-  render: (scrollYProgress: MotionValue<number>) => React.ReactNode;
+  render: (ctx: StageRenderContext) => React.ReactNode;
 };
 
 // 4 stages, each occupying ~25% of the hero scroll. Fade-in over 5%, hold
@@ -44,7 +63,7 @@ const stages: Stage[] = [
     inEnd: 0.3,
     outStart: 0.45,
     outEnd: 0.5,
-    render: (scrollYProgress) => <Stage2Patreon scrollYProgress={scrollYProgress} />,
+    render: (ctx) => <Stage2Patreon scrollYProgress={ctx.scrollYProgress} />,
   },
   {
     id: "stage-3",
@@ -52,7 +71,7 @@ const stages: Stage[] = [
     inEnd: 0.55,
     outStart: 0.7,
     outEnd: 0.75,
-    render: () => <Stage3Blog />,
+    render: (ctx) => <Stage3Blog posts={ctx.blogPreviews} />,
   },
   {
     id: "stage-4",
@@ -146,30 +165,71 @@ function Stage2Patreon({
   );
 }
 
-function Stage3Blog() {
+function Stage3Blog({ posts }: { posts: BlogPreview[] }) {
   return (
-    <div className="hero-text-outline pointer-events-auto max-w-xl">
-      <p className="mb-3 text-sm font-semibold uppercase tracking-widest text-white/80">
-        Blog
-      </p>
-      <h2 className="text-4xl font-bold tracking-tight sm:text-5xl">
-        Dispatches from the frozen north.
-      </h2>
-      <p className="mt-4 text-lg text-white/90">
-        Session recaps, campaign guides, and behind-the-table notes. Read
-        along between streams.
-      </p>
-      <Link
-        href="/blog"
-        className={cn(
-          buttonVariants({ size: "lg", variant: "outline" }),
-          "mt-8",
-        )}
-      >
-        Read the Blog →
-      </Link>
-      {/* TODO(iteration-3): render latest 3 posts from Sanity here. */}
+    <div className="grid w-full grid-cols-1 items-center gap-12 lg:grid-cols-2">
+      <div className="hero-text-outline pointer-events-auto max-w-xl">
+        <p className="mb-3 text-sm font-semibold uppercase tracking-widest text-white/80">
+          Blog
+        </p>
+        <h2 className="text-4xl font-bold tracking-tight sm:text-5xl">
+          Dispatches from the frozen north.
+        </h2>
+        <p className="mt-4 text-lg text-white/90">
+          Session recaps, campaign guides, and behind-the-table notes. Read
+          along between streams.
+        </p>
+        <Link
+          href="/blog"
+          className={cn(
+            buttonVariants({ size: "lg", variant: "outline" }),
+            "mt-8",
+          )}
+        >
+          Read the Blog →
+        </Link>
+      </div>
+      {posts.length > 0 && (
+        <div className="pointer-events-auto hidden flex-col gap-3 lg:flex">
+          {posts.slice(0, 3).map((post) => (
+            <BlogPreviewCard key={post.slug} post={post} />
+          ))}
+        </div>
+      )}
     </div>
+  );
+}
+
+function BlogPreviewCard({ post }: { post: BlogPreview }) {
+  const formattedDate = new Date(post.publishedAt).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+  return (
+    <Link
+      href={`/blog/${post.slug}`}
+      className="group flex gap-3 rounded-lg border border-white/30 bg-white/10 p-3 backdrop-blur-md transition-colors hover:bg-white/20"
+    >
+      {post.coverUrl && (
+        <Image
+          src={post.coverUrl}
+          alt={post.coverAlt}
+          width={120}
+          height={80}
+          className="aspect-video h-20 w-32 shrink-0 rounded object-cover"
+        />
+      )}
+      <div className="min-w-0 flex-1">
+        <p className="line-clamp-2 text-sm font-semibold text-white group-hover:underline">
+          {post.title}
+        </p>
+        <p className="mt-1 line-clamp-2 text-xs text-white/80">{post.excerpt}</p>
+        <p className="mt-1.5 text-[10px] uppercase tracking-widest text-white/60">
+          {formattedDate}
+        </p>
+      </div>
+    </Link>
   );
 }
 
@@ -272,9 +332,11 @@ function PdfCard({
 function StageOverlay({
   stage,
   scrollYProgress,
+  blogPreviews,
 }: {
   stage: Stage;
   scrollYProgress: MotionValue<number>;
+  blogPreviews: BlogPreview[];
 }) {
   // Function-form useTransform: every scroll position maps to an explicit
   // return value. Avoids framer-motion's keyframe-interpolation edge cases
@@ -296,7 +358,7 @@ function StageOverlay({
       style={{ opacity }}
       className="absolute inset-0 flex items-center px-6 sm:px-12 lg:px-24"
     >
-      {stage.render(scrollYProgress)}
+      {stage.render({ scrollYProgress, blogPreviews })}
     </motion.div>
   );
 }
@@ -346,9 +408,11 @@ function ReducedMotionStage1() {
 
 export function HeroCopyOverlay({
   scrollYProgress,
+  blogPreviews,
   reducedMotion = false,
 }: {
   scrollYProgress: MotionValue<number>;
+  blogPreviews: BlogPreview[];
   reducedMotion?: boolean;
 }) {
   if (reducedMotion) {
@@ -362,7 +426,12 @@ export function HeroCopyOverlay({
   return (
     <div className="pointer-events-none absolute inset-0 z-10">
       {stages.map((stage) => (
-        <StageOverlay key={stage.id} stage={stage} scrollYProgress={scrollYProgress} />
+        <StageOverlay
+          key={stage.id}
+          stage={stage}
+          scrollYProgress={scrollYProgress}
+          blogPreviews={blogPreviews}
+        />
       ))}
     </div>
   );
