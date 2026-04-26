@@ -25,7 +25,7 @@ export default function MarketingLayout({
         Skip to main content
       </a>
       <SiteHeader />
-      <main id="main-content" className="relative flex-1">
+      <main id="main-content" className="flex-1">
         {children}
       </main>
       <SiteFooter />
