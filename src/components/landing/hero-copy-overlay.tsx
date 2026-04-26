@@ -83,7 +83,7 @@ function Stage1Intro() {
             "border-0 bg-[#FF424D] text-white hover:bg-[#e63a45]",
           )}
         >
-          Become a Patron
+          Become a Patreon
         </Link>
         <Link
           href="/blog"
@@ -131,7 +131,7 @@ function Stage2Patreon({
             "mt-8 border-0 bg-[#FF424D] text-white hover:bg-[#e63a45]",
           )}
         >
-          Become a Patron →
+          Become a Patreon →
         </Link>
       </div>
       {/*
@@ -323,7 +323,7 @@ function ReducedMotionStage1() {
             "border-0 bg-[#FF424D] text-white hover:bg-[#e63a45]",
           )}
         >
-          Become a Patron
+          Become a Patreon
         </Link>
         <Link
           href="/blog"

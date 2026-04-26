@@ -96,7 +96,7 @@ export function SiteHeader() {
                   "border-0 bg-[#FF424D] text-white hover:bg-[#e63a45]",
                 )}
               >
-                Become a Patron
+                Become a Patreon
               </Link>
             </nav>
 
@@ -144,7 +144,7 @@ export function SiteHeader() {
                       "mt-4 border-0 bg-[#FF424D] text-white hover:bg-[#e63a45]",
                     )}
                   >
-                    Become a Patron
+                    Become a Patreon
                   </Link>
                 </nav>
               </SheetContent>
