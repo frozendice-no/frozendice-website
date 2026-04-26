@@ -74,27 +74,31 @@ function Stage1Intro() {
         campaign recaps on the blog.
       </p>
       <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-        <a
-          href="#stage-patreon"
+        <Link
+          href={PATREON_URL}
+          target="_blank"
+          rel="noopener noreferrer"
           className={cn(
             buttonVariants({ size: "lg" }),
             "border-0 bg-[#FF424D] text-white hover:bg-[#e63a45]",
           )}
         >
           Become a Patron
-        </a>
-        <a
-          href="#stage-blog"
+        </Link>
+        <Link
+          href="/blog"
           className={buttonVariants({ size: "lg", variant: "outline" })}
         >
           Read the Blog
-        </a>
-        <a
-          href="#stage-streams"
+        </Link>
+        <Link
+          href={youtubeChannelUrl()}
+          target="_blank"
+          rel="noopener noreferrer"
           className={buttonVariants({ size: "lg", variant: "outline" })}
         >
           Watch Stream
-        </a>
+        </Link>
       </div>
     </div>
   );
