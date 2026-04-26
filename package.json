@@ -54,9 +54,11 @@
     "drizzle-kit": "^0.31.10",
     "eslint": "^9",
     "eslint-config-next": "^16.2.4",
+    "ffmpeg-static": "^5.3.0",
     "gray-matter": "^4.0.3",
     "jsdom": "^29.0.2",
     "marked": "^18.0.2",
+    "sharp": "^0.34.5",
     "tailwindcss": "^4",
     "tsx": "^4.21.0",
     "typescript": "^5"
@@ -64,6 +66,7 @@
   "pnpm": {
     "onlyBuiltDependencies": [
       "esbuild",
+      "ffmpeg-static",
       "msw",
       "sharp",
       "unrs-resolver"
