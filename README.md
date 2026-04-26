@@ -36,7 +36,15 @@ Marketing site for FrozenDice — a Nordic D&D streaming brand. Built with Next.
 
 ## Architecture
 
-See [docs/superpowers/specs/2026-04-19-frozendice-redesign-design.md](docs/superpowers/specs/2026-04-19-frozendice-redesign-design.md) for the design spec and [docs/superpowers/plans/](docs/superpowers/plans/) for phased implementation plans.
+- **Design spec:** [docs/superpowers/specs/2026-04-19-frozendice-redesign-design.md](docs/superpowers/specs/2026-04-19-frozendice-redesign-design.md)
+- **Phased implementation plans:** [docs/superpowers/plans/](docs/superpowers/plans/) — one plan per phase (Phase 1 foundation, 2 blog, 3 shop, 4 landing, 5 about; Phase 6 cleanup TBD)
+
+## Project status
+
+- **Work tracker:** [GitHub Project (Kanban)](https://github.com/orgs/frozendice-no/projects/1) and [milestone #1](https://github.com/frozendice-no/frozendice-website/milestone/1) — one issue per phase plus a [spec-review issue](https://github.com/frozendice-no/frozendice-website/issues/2) (15 findings, prioritized)
+- **Stakeholder summary:** [Notion FrozenDice Website hub](https://www.notion.so/34769e9f245a81e3b3c7f10613dc73d1) — links to Decision Log, Tasks Tracker, Projects, Technical Reference
+
+When in doubt, GitHub issues are authoritative for status.
 
 ## Deployment
 
