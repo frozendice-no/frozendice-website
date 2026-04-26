@@ -3,14 +3,14 @@
  * One-shot hero-frame pipeline.
  *
  * Converts frozendice_dice/ezgif-frame-NNN.jpg (121 frames, 1-indexed) into:
- *   public/images/hero/desktop/N.webp  — 1280px wide, quality 80
- *   public/images/hero/mobile/N.webp   — 640px wide,  quality 75
+ *   public/images/hero/desktop/N.webp  — source resolution (1928px), quality 85, effort 6
+ *   public/images/hero/mobile/N.webp   — 800px wide,                 quality 82, effort 6
  *
  * Usage:
  *   pnpm tsx scripts/optimize-hero-frames.ts
  *
- * Run once. Commit the output. After verifying, frozendice_dice/ is
- * gitignored — keep the source folder locally as a backup.
+ * Run once. Commit the output. frozendice_dice/ is gitignored — keep the
+ * source folder locally as a backup. Re-run if quality settings change.
  */
 import sharp from "sharp";
 import fs from "node:fs";
@@ -21,10 +21,12 @@ const DEST_DESKTOP = path.join(process.cwd(), "public/images/hero/desktop");
 const DEST_MOBILE = path.join(process.cwd(), "public/images/hero/mobile");
 const TOTAL_FRAMES = 121;
 
-const DESKTOP_WIDTH = 1280;
-const DESKTOP_QUALITY = 80;
-const MOBILE_WIDTH = 640;
-const MOBILE_QUALITY = 75;
+// Desktop: pass through source resolution (1928px). With cover-fit and
+// high-DPR displays, anything smaller goes soft on 1080p+ viewports.
+const DESKTOP_QUALITY = 85;
+const MOBILE_WIDTH = 800;
+const MOBILE_QUALITY = 82;
+const ENCODE_EFFORT = 6;
 
 function srcPath(n: number): string {
   const padded = String(n).padStart(3, "0");
@@ -37,14 +39,14 @@ async function processFrame(n: number): Promise<void> {
     throw new Error(`Missing source frame: ${src}`);
   }
 
+  // Desktop: no resize — keep source pixels.
   await sharp(src)
-    .resize({ width: DESKTOP_WIDTH, withoutEnlargement: true })
-    .webp({ quality: DESKTOP_QUALITY })
+    .webp({ quality: DESKTOP_QUALITY, effort: ENCODE_EFFORT })
     .toFile(path.join(DEST_DESKTOP, `${n}.webp`));
 
   await sharp(src)
     .resize({ width: MOBILE_WIDTH, withoutEnlargement: true })
-    .webp({ quality: MOBILE_QUALITY })
+    .webp({ quality: MOBILE_QUALITY, effort: ENCODE_EFFORT })
     .toFile(path.join(DEST_MOBILE, `${n}.webp`));
 }
 
