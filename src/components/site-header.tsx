@@ -46,7 +46,7 @@ export function SiteHeader() {
         </defs>
       </svg>
 
-      <header className="sticky top-4 z-50 px-4">
+      <header className="fixed inset-x-0 top-4 z-50 px-4">
         <div className="relative mx-auto w-fit">
           {/* Outer halo: a soft, generously-blurred white glow that
               fades into whatever's behind the header. Reads as "snow

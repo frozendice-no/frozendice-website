@@ -42,7 +42,10 @@ export function HeroSection() {
   }
 
   return (
-    <div ref={heroRef} className="relative h-[1000vh]">
+    // 500vh = 4 stages × ~125vh each — roughly one viewport-height of scroll
+    // per stage. Tunable: increase for slower/more deliberate, decrease for
+    // punchier transitions.
+    <div ref={heroRef} className="relative h-[500vh]">
       {/*
         Anchor targets for stage-1 CTAs. Positioned absolutely at the start
         of each stage so smooth-scroll jumps land the viewport at the right
