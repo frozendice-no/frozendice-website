@@ -69,8 +69,16 @@ export function HeroCanvas({
   function resizeCanvas() {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    // Match canvas pixel buffer to display pixel grid for crisp rendering on
+    // high-DPR displays. Cap at 2 — going to 3 on phones is a memory/perf hit
+    // for marginal visual gain.
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const cssWidth = window.innerWidth;
+    const cssHeight = window.innerHeight;
+    canvas.width = Math.round(cssWidth * dpr);
+    canvas.height = Math.round(cssHeight * dpr);
+    canvas.style.width = `${cssWidth}px`;
+    canvas.style.height = `${cssHeight}px`;
     drawFrame(currentFrameRef.current);
   }
 
