@@ -21,7 +21,10 @@ function paint(
   img: HTMLImageElement,
 ) {
   const { width: cw, height: ch } = canvas;
-  const scale = Math.min(cw / img.naturalWidth, ch / img.naturalHeight);
+  // Cover fit: scale to fill the viewport on the longer axis. The dice is
+  // centered in the source frame, so cropped edges (only on extreme aspect
+  // ratios) are the surrounding atmosphere, not the die itself.
+  const scale = Math.max(cw / img.naturalWidth, ch / img.naturalHeight);
   const dw = img.naturalWidth * scale;
   const dh = img.naturalHeight * scale;
   const dx = (cw - dw) / 2;
@@ -72,20 +75,31 @@ export function HeroCanvas({
   }
 
   useEffect(() => {
+    // Reset the active frame when the reduced-motion preference flips, so
+    // the freeze frame actually paints (and so leaving reduced-motion
+    // restarts from frame 1).
+    currentFrameRef.current = reducedMotion ? REDUCED_MOTION_FRAME : 1;
+
     const set = getAssetSet();
     const images: HTMLImageElement[] = new Array(TOTAL_FRAMES);
     imagesRef.current = images;
 
     function loadFrame(n: number) {
       const img = new Image();
-      img.src = frameUrl(set, n);
+      // Assign onload BEFORE src so a synchronous cache-hit doesn't fire
+      // load before the listener exists. Also handle the already-complete
+      // case explicitly for browsers that fire load synchronously without
+      // queuing a callback.
       img.onload = () => {
-        // If this is the frame we're currently scrolled to, redraw now that it's ready.
         if (currentFrameRef.current === n) {
           drawFrame(n);
         }
       };
+      img.src = frameUrl(set, n);
       images[n - 1] = img;
+      if (img.complete && img.naturalWidth > 0 && currentFrameRef.current === n) {
+        drawFrame(n);
+      }
     }
 
     if (reducedMotion) {
