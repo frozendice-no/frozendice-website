@@ -83,10 +83,12 @@ export function HeroCanvas({
   }
 
   useEffect(() => {
-    // Reset the active frame when the reduced-motion preference flips, so
-    // the freeze frame actually paints (and so leaving reduced-motion
-    // restarts from frame 1).
-    currentFrameRef.current = reducedMotion ? REDUCED_MOTION_FRAME : 1;
+    // Initialize the active frame from the current motion value so we paint
+    // the correct frame on mount regardless of scroll direction or page-load
+    // scroll position (e.g., user lands at #stage-blog → mid-scroll frame).
+    currentFrameRef.current = reducedMotion
+      ? REDUCED_MOTION_FRAME
+      : Math.max(1, Math.min(TOTAL_FRAMES, Math.round(frameIndex.get())));
 
     const set = getAssetSet();
     const images: HTMLImageElement[] = new Array(TOTAL_FRAMES);
