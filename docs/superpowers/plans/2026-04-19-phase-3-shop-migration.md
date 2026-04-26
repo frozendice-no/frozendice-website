@@ -615,6 +615,11 @@ export default async function ProductPage({ params }: Props) {
             price: (product.priceInCents / 100).toFixed(2),
             priceCurrency: product.currency.toUpperCase(),
             availability: "https://schema.org/InStock",
+            seller: {
+              "@type": "Organization",
+              name: siteConfig.name,
+              url: siteConfig.url,
+            },
           },
         }}
       />

@@ -1884,6 +1884,33 @@ export default async function HomePage() {
 
   return (
     <>
+      {/*
+        LCP preload for the hero canvas first frame.
+        Caught in spec review 2026-04-26: without this hint, frame 1 is only
+        discovered after the HeroCanvas client component hydrates and starts
+        preloading via `new Image()`. That makes LCP fail on cold loads. The
+        preload below tells the browser to fetch frame 1 in parallel with the
+        bundle. React 19 hoists <link> tags to <head> automatically.
+        Both desktop and mobile sets get a hint; the matching media query
+        decides which one is fetched.
+      */}
+      <link
+        rel="preload"
+        as="image"
+        href="/images/hero/desktop/1.webp"
+        media="(min-width: 768px)"
+        // @ts-expect-error fetchpriority is valid HTML, not yet in React types
+        fetchpriority="high"
+      />
+      <link
+        rel="preload"
+        as="image"
+        href="/images/hero/mobile/1.webp"
+        media="(max-width: 767px)"
+        // @ts-expect-error fetchpriority is valid HTML, not yet in React types
+        fetchpriority="high"
+      />
+
       <JsonLd
         data={{
           "@context": "https://schema.org",
@@ -1995,24 +2022,28 @@ Then manually add the three YouTube vars if they aren't yet in Vercel's env sett
 
 The Phase 1 revalidate webhook already handles `post` and `product` tags. Extend it to also revalidate `patreonPerks`, `streamSchedule`, and `featuredVods` when those Sanity documents are published.
 
-- [ ] **Step 1:** Read `src/app/api/revalidate/route.ts` first, then append the new document types to the tag map. The pattern from Phase 1 maps `_type` → `revalidateTag(tag)`. Extend the map:
+- [ ] **Step 1:** Read `src/app/api/revalidate/route.ts` first, then append the new document types to the tag map.
+
+**⚠️ Next 16 signature note:** `revalidateTag` requires a second argument in Next 16 — use `revalidateTag(tag, { expire: 0 })` for webhook-driven immediate cache busts. The Phase 1 handler already uses this two-argument form; preserve that pattern. (Caught in spec review 2026-04-26.)
 
 ```typescript
-// Existing (from Phase 1):
-// "post" → revalidateTag("post")
-// "product" → revalidateTag("product")
+// Existing (from Phase 1) — preserve as-is:
+// "post"    → revalidateTag("post", { expire: 0 })
+// "product" → revalidateTag("product", { expire: 0 })
 
-// Add Phase 4 singletons:
+// Add Phase 4 singletons (match the existing two-arg pattern):
 case "patreonPerks":
-  revalidateTag("patreonPerks");
+  revalidateTag("patreonPerks", { expire: 0 });
   break;
 case "streamSchedule":
-  revalidateTag("streamSchedule");
+  revalidateTag("streamSchedule", { expire: 0 });
   break;
 case "featuredVods":
-  revalidateTag("featuredVods");
+  revalidateTag("featuredVods", { expire: 0 });
   break;
 ```
+
+**Note on tag-name casing:** the webhook passes `body._type` directly through `revalidateTag`. Singleton schema `name` fields (`patreonPerks`, `streamSchedule`, `featuredVods`) must match the tag string at every fetch site exactly. Phase 1 schemas already use camelCase; do not introduce kebab-case or snake_case variants in fetches.
 
 The exact shape of the switch/map in the existing file depends on Phase 1's implementation — read the file first and slot the new cases into the correct position in the existing control flow.
 
