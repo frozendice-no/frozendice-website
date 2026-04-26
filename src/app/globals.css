@@ -141,4 +141,10 @@
     paint-order: stroke fill;
     text-shadow: 0 4px 16px rgba(0, 0, 0, 0.55);
   }
+
+  /* Applies the SVG turbulence filter defined in <SiteHeader>. The shell
+     layer behind the crisp pill gets organic, flurry-like edges. */
+  .snow-flurry-edge {
+    filter: url(#snow-flurry);
+  }
 }
