@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { HeroSection } from "@/components/landing/hero-section";
-import { JsonLd } from "@/components/json-ld";
 import { siteConfig } from "@/lib/site-config";
 
 export const metadata: Metadata = {
@@ -41,17 +40,6 @@ export default function HomePage() {
         href="/images/hero/mobile/1.webp"
         media="(max-width: 767px)"
         fetchPriority="high"
-      />
-
-      <JsonLd
-        data={{
-          "@context": "https://schema.org",
-          "@type": "WebSite",
-          name: siteConfig.name,
-          url: siteConfig.url,
-          description:
-            "Live D&D streaming from the frozen north. Original campaigns, Nordic lore, and a Patreon community.",
-        }}
       />
 
       <HeroSection />
