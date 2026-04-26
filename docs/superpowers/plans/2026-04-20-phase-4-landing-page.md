@@ -779,7 +779,7 @@ export function HeroCopyOverlay() {
           <h2 className="text-3xl font-bold tracking-tight sm:text-5xl">Join the saga.</h2>
           <div className="flex flex-col items-center gap-3 sm:flex-row">
             <Link
-              href="https://www.patreon.com/frozendice"
+              href="https://www.patreon.com/c/FrozenDice"
               target="_blank"
               rel="noopener noreferrer"
               className={cn(
@@ -1769,7 +1769,7 @@ const beats: Beat[] = [
         <h2 className="text-3xl font-bold tracking-tight sm:text-5xl">Join the saga.</h2>
         <div className="flex flex-col items-center gap-3 sm:flex-row">
           <Link
-            href="https://www.patreon.com/frozendice"
+            href="https://www.patreon.com/c/FrozenDice"
             target="_blank"
             rel="noopener noreferrer"
             className={cn(
@@ -1962,7 +1962,7 @@ pnpm dev
   - **Eyebrow:** `Patreon`
   - **Headline:** `The full saga lives here.`
   - **Intro body:** `Patrons get exclusive campaign maps, monster stat blocks, NPC portraits, session journals, and access to our Discord community. Every campaign chapter, unlocked.`
-  - **Patreon URL:** `https://www.patreon.com/frozendice`
+  - **Patreon URL:** `https://www.patreon.com/c/FrozenDice`
   - **Perk cards (4–5):** For each card, upload a placeholder image, set a label (e.g. `Campaign map`, `Monster stat block`, `NPC portrait`, `Session journal`, `Discord community`), and add a one-sentence blurb.
   - **Tier summary (optional, up to 3):** Use placeholders `Campfire / Ranger / Dragonslayer` with example prices and one-line summaries. These are finalized with real Patreon data later — no code change required.
 
@@ -2238,7 +2238,7 @@ Phase 4 is complete when all of these are true:
 ### Placeholder scan
 
 - Tagline "Cold dice. Hot stories." — intentional per spec §11; editor-tunable without code.
-- Patreon URL `https://www.patreon.com/frozendice` — used directly in code. **Controller should confirm this is the live URL before shipping.**
+- Patreon URL `https://www.patreon.com/c/FrozenDice` — used directly in code. **Controller should confirm this is the live URL before shipping.**
 - `NEXT_PUBLIC_YOUTUBE_CHANNEL_ID` in the Watch Live CTA href — must be populated in env before deploy. Graceful fallback (`?? ""`) prevents a crash with an empty URL.
 - Perk card images for `patreonPerks` in Task 19 — placeholder images used during seeding; replaced with real art by the editor at any time (no code change needed).
 - Tier names `Campfire / Ranger / Dragonslayer` — placeholders per spec §11; editor replaces in Studio.
@@ -2261,7 +2261,7 @@ Phase 4 is complete when all of these are true:
 
 ### Open questions for the controller to resolve before execution
 
-1. **Confirm Patreon URL:** Is `https://www.patreon.com/frozendice` the live campaign URL? It is hardcoded in `hero-copy-overlay.tsx` and `patreon-section-inner.tsx`. If the URL is different, update both files before shipping.
+1. **Confirm Patreon URL:** Is `https://www.patreon.com/c/FrozenDice` the live campaign URL? It is hardcoded in `hero-copy-overlay.tsx` and `patreon-section-inner.tsx`. If the URL is different, update both files before shipping.
 2. **`NEXT_PUBLIC_YOUTUBE_CHANNEL_ID` env var:** The Watch Live CTA constructs the YouTube channel URL from this public env var. It must be added to Vercel's env settings (it is the same value as `YOUTUBE_CHANNEL_ID` but prefixed `NEXT_PUBLIC_` so it is safe to expose to the client). Confirm this is acceptable before deploy.
 3. **Patreon section background color:** The section uses `bg-muted/20` — verify this reads well against the site's theme. If the design requires a more dramatic treatment (e.g. a dark overlay with snow), that is a style-only change to `patreon-section-inner.tsx` and can be made without re-executing earlier tasks.
 4. **Hero canvas background color:** The sticky container uses `bg-black`. If the first frame (die appearing) has transparency or a white background, `bg-black` may produce a harsh flash. Inspect `1.webp` and adjust if needed.

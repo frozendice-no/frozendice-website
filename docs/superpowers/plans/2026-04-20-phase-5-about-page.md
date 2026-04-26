@@ -443,9 +443,9 @@ export function CampaignFeature({ campaign }: { campaign: Campaign }) {
     .auto("format")
     .url();
 
-  const watchHref =
-    campaign.youtubePlaylistUrl ??
-    (campaign.blogTag ? `/blog/tag/${campaign.blogTag.slug}` : null);
+  const blogTagHref = campaign.blogTag
+    ? `/blog/tag/${campaign.blogTag.slug}`
+    : null;
 
   return (
     <div className="overflow-hidden rounded-2xl border bg-muted/30">
@@ -467,18 +467,35 @@ export function CampaignFeature({ campaign }: { campaign: Campaign }) {
           {campaign.title}
         </h3>
         <p className="max-w-prose text-muted-foreground">{campaign.summary}</p>
-        {watchHref && (
-          <Link
-            href={watchHref}
-            className={buttonVariants({ variant: "default" })}
-            {...(campaign.youtubePlaylistUrl
-              ? { target: "_blank", rel: "noopener noreferrer" }
-              : {})}
-          >
-            Watch from the beginning
-            <ArrowRight className="ml-2 h-4 w-4" />
-          </Link>
-        )}
+        <div className="flex flex-wrap items-center gap-3">
+          {/*
+            Show BOTH CTAs when both are set (per stakeholder direction 2026-04-26).
+            YouTube playlist sends viewers to the visual archive; blog tag sends them
+            to the written session recaps. They serve different audiences.
+          */}
+          {campaign.youtubePlaylistUrl && (
+            <Link
+              href={campaign.youtubePlaylistUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={buttonVariants({ variant: "default" })}
+            >
+              Watch on YouTube
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Link>
+          )}
+          {blogTagHref && (
+            <Link
+              href={blogTagHref}
+              className={buttonVariants({
+                variant: campaign.youtubePlaylistUrl ? "outline" : "default",
+              })}
+            >
+              Read session recaps
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Link>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -583,7 +600,7 @@ export function CtaStrip() {
       </p>
       <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
         <a
-          href="https://www.patreon.com/frozendice"
+          href="https://www.patreon.com/c/FrozenDice"
           target="_blank"
           rel="noopener noreferrer"
           className={cn(buttonVariants({ size: "lg" }), "gap-2")}

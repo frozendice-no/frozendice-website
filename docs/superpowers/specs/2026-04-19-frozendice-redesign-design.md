@@ -250,7 +250,8 @@ The existing `/about` page is hardcoded, still references `NewsletterSignup`, an
 ### Sanity schemas
 ```ts
 aboutPage (singleton) {
-  hero { eyebrow, headline, intro }
+  // Hero fields are flat at the top level (per Phase 1 schema); not nested under a `hero` object.
+  eyebrow, headline, intro
   storyBody               // Portable Text
   values[] { icon, title, description }
   businessEmail
