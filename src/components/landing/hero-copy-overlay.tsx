@@ -30,7 +30,7 @@ const beats: Beat[] = [
     outStart: 0.28,
     outEnd: 0.33,
     content: (
-      <div className="text-center text-white drop-shadow-lg">
+      <div className="hero-text-outline text-center">
         <h1 className="text-5xl font-bold tracking-tight sm:text-7xl">FrozenDice</h1>
         <p className="mt-4 text-xl font-medium sm:text-2xl">Cold dice. Hot stories.</p>
       </div>
@@ -43,7 +43,7 @@ const beats: Beat[] = [
     outStart: 0.61,
     outEnd: 0.66,
     content: (
-      <div className="text-center text-white drop-shadow-lg">
+      <div className="hero-text-outline text-center">
         <h2 className="text-3xl font-bold tracking-tight sm:text-5xl">
           Live D&amp;D from the frozen north.
         </h2>
@@ -60,7 +60,7 @@ const beats: Beat[] = [
     outStart: 0.95,
     outEnd: 1.0,
     content: (
-      <div className="pointer-events-auto flex flex-col items-center gap-6 text-center text-white drop-shadow-lg">
+      <div className="hero-text-outline pointer-events-auto flex flex-col items-center gap-6 text-center">
         <h2 className="text-3xl font-bold tracking-tight sm:text-5xl">Join the saga.</h2>
         <div className="flex flex-col items-center gap-3 sm:flex-row">
           <Link

@@ -129,3 +129,16 @@
     @apply font-sans;
   }
 }
+
+@layer utilities {
+  /* Hero copy laid over the live dice animation.
+     paint-order ensures the stroke paints behind the fill so glyph
+     weight is preserved; the soft text-shadow adds atmospheric depth
+     without blurring the outline. */
+  .hero-text-outline {
+    color: white;
+    -webkit-text-stroke: 1.5px rgba(0, 0, 0, 0.85);
+    paint-order: stroke fill;
+    text-shadow: 0 4px 16px rgba(0, 0, 0, 0.55);
+  }
+}
