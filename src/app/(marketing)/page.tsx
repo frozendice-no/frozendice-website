@@ -1,150 +1,62 @@
-import Link from "next/link";
-import { Map, BookOpen, ShoppingBag, ArrowRight, Dice5, Sparkles } from "lucide-react";
-import { buttonVariants } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { NewsletterSignup } from "@/components/newsletter-signup";
-import { cn } from "@/lib/utils";
+import type { Metadata } from "next";
+import { HeroSection } from "@/components/landing/hero-section";
+import { JsonLd } from "@/components/json-ld";
+import { siteConfig } from "@/lib/site-config";
 
-const features = [
-  {
-    icon: Map,
-    title: "Battle Maps",
-    description:
-      "High-quality battle maps ready for your virtual tabletop or print-and-play sessions.",
+export const metadata: Metadata = {
+  title: {
+    absolute: "FrozenDice — Cold dice. Hot stories.",
   },
-  {
-    icon: BookOpen,
-    title: "Campaign Resources",
+  description:
+    "Live D&D streaming from the frozen north. Original campaigns, Nordic lore, and a Patreon community of adventurers.",
+  alternates: { canonical: "/" },
+  openGraph: {
+    type: "website",
+    title: "FrozenDice — Cold dice. Hot stories.",
     description:
-      "Adventure modules, NPC generators, and lore guides to elevate your campaigns.",
+      "Live D&D streaming from the frozen north. Original campaigns, Nordic lore, and a Patreon community of adventurers.",
+    url: siteConfig.url,
   },
-  {
-    icon: ShoppingBag,
-    title: "Digital Store",
-    description:
-      "Browse and purchase premium D&D resources — PDFs, maps, and bundles delivered instantly.",
-  },
-];
+};
 
 export default function HomePage() {
   return (
     <>
-      <section className="relative overflow-hidden bg-gradient-to-b from-primary/5 via-background to-background py-24 sm:py-32 lg:py-40">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,hsl(var(--primary)/0.08),transparent_70%)]" />
-        <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-2xl text-center">
-            <div className="mb-6 flex justify-center">
-              <div className="rounded-2xl bg-primary/10 p-4">
-                <Dice5 aria-hidden="true" className="h-12 w-12 text-primary sm:h-16 sm:w-16" />
-              </div>
-            </div>
-            <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
-              Roll into Adventure
-            </h1>
-            <p className="mt-2 text-lg font-medium text-primary/80">
-              Norwegian D&amp;D Community &amp; Creator Hub
-            </p>
-            <p className="mt-6 text-lg leading-8 text-muted-foreground">
-              Premium battle maps, campaign guides, and tabletop RPG
-              resources — crafted by dungeon masters in Norway, built for
-              tables everywhere.
-            </p>
-            <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-              <Link
-                href="/store"
-                className={cn(buttonVariants({ size: "lg" }), "gap-2")}
-              >
-                Browse the Store
-                <ArrowRight aria-hidden="true" className="h-4 w-4" />
-              </Link>
-              <Link
-                href="/blog"
-                className={buttonVariants({ size: "lg", variant: "outline" })}
-              >
-                Read the Blog
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/*
+        LCP preload for the hero canvas first frame. Without this, frame 1 is
+        only requested after HeroCanvas hydrates. React 19 hoists <link> tags
+        to <head>; the matching media query decides which set the browser
+        actually fetches.
+      */}
+      <link
+        rel="preload"
+        as="image"
+        href="/images/hero/desktop/1.webp"
+        media="(min-width: 768px)"
+        fetchPriority="high"
+      />
+      <link
+        rel="preload"
+        as="image"
+        href="/images/hero/mobile/1.webp"
+        media="(max-width: 767px)"
+        fetchPriority="high"
+      />
 
-      <section className="border-t bg-muted/30 py-20 sm:py-28">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-              Everything You Need at the Table
-            </h2>
-            <p className="mt-4 text-muted-foreground">
-              Resources crafted by dungeon masters, for dungeon masters.
-            </p>
-          </div>
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          name: siteConfig.name,
+          url: siteConfig.url,
+          description:
+            "Live D&D streaming from the frozen north. Original campaigns, Nordic lore, and a Patreon community.",
+        }}
+      />
 
-          <div className="mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            {features.map((feature) => (
-              <Card
-                key={feature.title}
-                className="border-0 bg-background shadow-sm"
-              >
-                <CardHeader>
-                  <feature.icon aria-hidden="true" className="mb-2 h-10 w-10 text-primary" />
-                  <CardTitle>{feature.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription className="text-base">
-                    {feature.description}
-                  </CardDescription>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
+      <HeroSection />
 
-      <section id="newsletter" className="py-20 sm:py-28">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-          <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
-            <div className="rounded-3xl border bg-gradient-to-br from-primary/10 via-background to-background p-8 shadow-sm sm:p-10">
-              <div className="mb-4 flex items-center gap-3 text-sm font-medium text-primary">
-                <Sparkles aria-hidden="true" className="h-5 w-5" />
-                Free Tools
-              </div>
-              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-                Built for quick table-side wins
-              </h2>
-              <p className="mt-4 max-w-xl text-muted-foreground">
-                Explore the new free tools section for practical helpers that make
-                prep faster and sessions smoother.
-              </p>
-              <div className="mt-8">
-                <Link
-                  href="/tools"
-                  className={cn(buttonVariants({ size: "lg" }), "gap-2")}
-                >
-                  Explore Free Tools
-                  <ArrowRight aria-hidden="true" className="h-4 w-4" />
-                </Link>
-              </div>
-            </div>
-
-            <div className="mx-auto max-w-xl text-center lg:text-left">
-              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-                Join the Community
-              </h2>
-              <p className="mt-4 text-muted-foreground">
-                Get new battle maps, campaign tips, and exclusive content delivered
-                to your inbox.
-              </p>
-              <NewsletterSignup className="mt-8 mx-auto max-w-md lg:mx-0" />
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* TODO(phase-4): add PatreonSection, StreamsSection, FeaturedProductsSection in subsequent sessions */}
     </>
   );
 }
