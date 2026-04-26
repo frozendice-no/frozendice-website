@@ -1,11 +1,25 @@
 import Image from "next/image";
-import { MDXRemote } from "next-mdx-remote/rsc";
 import { Calendar, Clock, User } from "lucide-react";
 import { BreadcrumbJsonLd, JsonLd } from "@/components/json-ld";
 import { siteConfig } from "@/lib/site-config";
-import type { BlogPost as BlogPostType } from "@/lib/blog";
+import { PortableText } from "@/components/portable-text";
+import { urlForImage } from "@/sanity/image";
+import type { PostDetail } from "@/sanity/types";
+import { PatreonCtaBlock } from "@/components/portable-text/patreon-cta-block";
 
-export function BlogPostContent({ post }: { post: BlogPostType }) {
+export async function BlogPostContent({
+  post,
+  readingLabel,
+}: {
+  post: PostDetail;
+  readingLabel: string;
+}) {
+  const coverUrl = post.coverImage
+    ? urlForImage(post.coverImage).width(1920).height(1080).auto("format").url()
+    : null;
+  const ogImage = post.seo?.ogImage ?? post.coverImage;
+  const ogUrl = ogImage ? urlForImage(ogImage).width(1200).height(630).url() : null;
+
   return (
     <>
       <JsonLd
@@ -14,14 +28,11 @@ export function BlogPostContent({ post }: { post: BlogPostType }) {
           "@type": "BlogPosting",
           headline: post.title,
           description: post.excerpt,
-          image: post.coverImage
-            ? `${siteConfig.url}${post.coverImage}`
-            : undefined,
+          image: ogUrl ?? undefined,
           datePublished: post.publishedAt,
-          dateModified: post.updatedAt ?? post.publishedAt,
           author: {
             "@type": "Person",
-            name: post.author,
+            name: post.author.name,
           },
           publisher: {
             "@type": "Organization",
@@ -42,12 +53,12 @@ export function BlogPostContent({ post }: { post: BlogPostType }) {
       <article className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
         <header className="mb-10">
           <div className="mb-4 flex flex-wrap gap-2">
-            {post.categories.map((cat) => (
+            {post.tags.map((tag) => (
               <span
-                key={cat}
+                key={tag._id}
                 className="rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary"
               >
-                {cat}
+                {tag.name}
               </span>
             ))}
           </div>
@@ -58,7 +69,7 @@ export function BlogPostContent({ post }: { post: BlogPostType }) {
           <div className="mt-6 flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
             <span className="flex items-center gap-1">
               <User aria-hidden="true" className="h-4 w-4" />
-              {post.author}
+              {post.author.name}
             </span>
             <span className="flex items-center gap-1">
               <Calendar aria-hidden="true" className="h-4 w-4" />
@@ -70,40 +81,33 @@ export function BlogPostContent({ post }: { post: BlogPostType }) {
             </span>
             <span className="flex items-center gap-1">
               <Clock aria-hidden="true" className="h-4 w-4" />
-              {post.readingTime}
+              {readingLabel}
             </span>
           </div>
         </header>
 
-        {post.coverImage && (
+        {coverUrl && (
           <Image
-            src={post.coverImage}
-            alt={post.title}
-            width={960}
-            height={540}
+            src={coverUrl}
+            alt={post.coverImage?.alt ?? post.title}
+            width={1920}
+            height={1080}
             priority
             className="mb-10 aspect-video w-full rounded-lg object-cover"
           />
         )}
 
         <div className="prose prose-neutral dark:prose-invert max-w-none">
-          <MDXRemote source={post.content} />
+          <PortableText value={post.body} />
         </div>
 
-        {post.tags.length > 0 && (
-          <footer className="mt-12 border-t pt-6">
-            <div className="flex flex-wrap gap-2">
-              {post.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="rounded-md bg-muted px-2 py-1 text-xs text-muted-foreground"
-                >
-                  #{tag}
-                </span>
-              ))}
-            </div>
-          </footer>
-        )}
+        <PatreonCtaBlock
+          value={{
+            heading: "Enjoying the saga?",
+            body: "Our patrons get behind-the-scenes notes, exclusive session recaps, and early access to every stream.",
+            buttonLabel: "Join on Patreon",
+          }}
+        />
       </article>
     </>
   );
