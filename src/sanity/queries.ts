@@ -3,6 +3,7 @@ import type {
   FeaturedVods,
   PostCard,
   PostDetail,
+  PrivacyPolicy,
   StreamSchedule,
   TagRef,
 } from "./types";
@@ -82,6 +83,27 @@ export async function getStreamSchedule(): Promise<StreamSchedule | null> {
     }`,
     {},
     { next: { tags: ["streamSchedule"] } },
+  );
+}
+
+export async function getPrivacyPolicy(): Promise<PrivacyPolicy | null> {
+  return client.fetch(
+    `*[_type == "privacyPolicy"][0] {
+      title,
+      lastUpdated,
+      intro,
+      "sections": sections[] {
+        _key,
+        heading,
+        body
+      },
+      dataControllerName,
+      dataControllerOrgNumber,
+      dataControllerAddress,
+      contactEmail
+    }`,
+    {},
+    { next: { tags: ["privacyPolicy"] } },
   );
 }
 
