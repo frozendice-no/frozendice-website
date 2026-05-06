@@ -1,14 +1,27 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useTransition } from "react";
+import { setConsent } from "@/app/actions/consent";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { useCookieConsent } from "./cookie-consent-provider";
 
-export function CookieConsent() {
-  const { bannerOpen, accept, decline } = useCookieConsent();
+export function CookieConsent({ open }: { open: boolean }) {
+  const router = useRouter();
+  const [pending, startTransition] = useTransition();
 
-  if (!bannerOpen) return null;
+  if (!open) return null;
+
+  function decide(value: "accepted" | "declined") {
+    startTransition(async () => {
+      await setConsent(value);
+      // Re-render the layout so the (server-side) cookie read picks up
+      // the new value — this is what conditionally mounts <GoogleTagManager>
+      // (or removes it on Decline) without a full page reload.
+      router.refresh();
+    });
+  }
 
   return (
     <div
@@ -27,14 +40,16 @@ export function CookieConsent() {
       <div className="mt-3 flex gap-2 sm:mt-0 sm:shrink-0">
         <button
           type="button"
-          onClick={decline}
+          onClick={() => decide("declined")}
+          disabled={pending}
           className={cn(buttonVariants({ variant: "outline", size: "sm" }))}
         >
           Decline
         </button>
         <button
           type="button"
-          onClick={accept}
+          onClick={() => decide("accepted")}
+          disabled={pending}
           className={cn(buttonVariants({ size: "sm" }))}
         >
           Accept

@@ -1,13 +1,27 @@
 "use client";
 
-import { useCookieConsent } from "./cookie-consent-provider";
+import { useRouter } from "next/navigation";
+import { useTransition } from "react";
+import { clearConsent } from "@/app/actions/consent";
 
 export function ManageCookiesButton({ className }: { className?: string }) {
-  const { openBanner } = useCookieConsent();
+  const router = useRouter();
+  const [pending, startTransition] = useTransition();
+
+  function onClick() {
+    startTransition(async () => {
+      await clearConsent();
+      // Re-render the layout: with the cookie gone, the banner will mount
+      // again so the user can change their mind.
+      router.refresh();
+    });
+  }
+
   return (
     <button
       type="button"
-      onClick={openBanner}
+      onClick={onClick}
+      disabled={pending}
       className={className}
     >
       Manage cookies

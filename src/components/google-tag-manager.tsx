@@ -1,13 +1,13 @@
-"use client";
-
 import Script from "next/script";
-import { useCookieConsent } from "./cookie-consent-provider";
 
 const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID;
 
+// These components render only when their parent decides to mount them based
+// on consent state read server-side from the `cookie-consent` cookie. They
+// have no internal consent logic — gating is the parent layout's job.
+
 export function GoogleTagManager() {
-  const { state } = useCookieConsent();
-  if (!GTM_ID || state !== "accepted") return null;
+  if (!GTM_ID) return null;
 
   return (
     <Script id="gtm-init" strategy="afterInteractive">
@@ -21,8 +21,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 }
 
 export function GoogleTagManagerNoscript() {
-  const { state } = useCookieConsent();
-  if (!GTM_ID || state !== "accepted") return null;
+  if (!GTM_ID) return null;
 
   return (
     <noscript>
