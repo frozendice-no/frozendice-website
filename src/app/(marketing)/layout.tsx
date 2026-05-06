@@ -5,6 +5,7 @@ import {
   GoogleTagManagerNoscript,
 } from "@/components/google-tag-manager";
 import { CookieConsent } from "@/components/cookie-consent";
+import { CookieConsentProvider } from "@/components/cookie-consent-provider";
 import { OrganizationJsonLd, WebSiteJsonLd } from "@/components/json-ld";
 
 export default function MarketingLayout({
@@ -13,7 +14,7 @@ export default function MarketingLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <>
+    <CookieConsentProvider>
       <GoogleTagManager />
       <OrganizationJsonLd />
       <WebSiteJsonLd />
@@ -30,6 +31,6 @@ export default function MarketingLayout({
       </main>
       <SiteFooter />
       <CookieConsent />
-    </>
+    </CookieConsentProvider>
   );
 }

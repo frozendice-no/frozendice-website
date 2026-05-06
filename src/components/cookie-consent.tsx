@@ -1,50 +1,39 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-
-const CONSENT_KEY = "cookie-consent";
+import { useCookieConsent } from "./cookie-consent-provider";
 
 export function CookieConsent() {
-  const [visible, setVisible] = useState(false);
+  const { bannerOpen, accept, decline } = useCookieConsent();
 
-  useEffect(() => {
-    setVisible(!localStorage.getItem(CONSENT_KEY));
-  }, []);
-
-  function accept() {
-    localStorage.setItem(CONSENT_KEY, "accepted");
-    setVisible(false);
-  }
-
-  function decline() {
-    localStorage.setItem(CONSENT_KEY, "declined");
-    setVisible(false);
-  }
-
-  if (!visible) return null;
+  if (!bannerOpen) return null;
 
   return (
-    <div role="region" aria-label="Cookie consent" className="fixed inset-x-0 bottom-0 z-50 border-t bg-background p-4 shadow-lg sm:flex sm:items-center sm:justify-between sm:gap-4 sm:px-6">
+    <div
+      role="region"
+      aria-label="Cookie consent"
+      className="fixed inset-x-0 bottom-0 z-50 border-t bg-background p-4 shadow-lg sm:flex sm:items-center sm:justify-between sm:gap-4 sm:px-6"
+    >
       <p className="text-sm text-muted-foreground">
-        We use cookies and analytics to improve your experience. By continuing,
-        you agree to our{" "}
-        <a href="/privacy" className="underline hover:text-foreground">
+        We use a small set of cookies and analytics to understand how the site
+        is used. Nothing loads until you accept. See our{" "}
+        <Link href="/privacy" className="underline hover:text-foreground">
           Privacy Policy
-        </a>
-        .
+        </Link>{" "}
+        for details.
       </p>
       <div className="mt-3 flex gap-2 sm:mt-0 sm:shrink-0">
         <button
+          type="button"
           onClick={decline}
-          className={cn(
-            buttonVariants({ variant: "outline", size: "sm" }),
-          )}
+          className={cn(buttonVariants({ variant: "outline", size: "sm" }))}
         >
           Decline
         </button>
         <button
+          type="button"
           onClick={accept}
           className={cn(buttonVariants({ size: "sm" }))}
         >
