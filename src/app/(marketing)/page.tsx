@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
 import { HeroSection } from "@/components/landing/hero-section";
+import type { BlogPreview } from "@/components/landing/hero-copy-overlay";
 import { siteConfig } from "@/lib/site-config";
+import { getAllPosts, getStreamSchedule } from "@/sanity/queries";
+import { urlForImage } from "@/sanity/image";
+import type { PostCard } from "@/sanity/types";
 
 export const metadata: Metadata = {
   title: {
@@ -18,7 +22,28 @@ export const metadata: Metadata = {
   },
 };
 
-export default function HomePage() {
+// Resolve Sanity types into the serializable shape Stage 3 needs. Image URLs
+// are pre-built here so the Client Component never touches @sanity/image-url.
+function toBlogPreview(post: PostCard): BlogPreview {
+  return {
+    slug: post.slug,
+    title: post.title,
+    excerpt: post.excerpt,
+    coverUrl: post.coverImage
+      ? urlForImage(post.coverImage).width(320).height(180).auto("format").url()
+      : null,
+    coverAlt: post.coverImage?.alt ?? post.title,
+    publishedAt: post.publishedAt,
+  };
+}
+
+export default async function HomePage() {
+  const [allPosts, streamSchedule] = await Promise.all([
+    getAllPosts(),
+    getStreamSchedule(),
+  ]);
+  const blogPreviews = allPosts.slice(0, 3).map(toBlogPreview);
+
   return (
     <>
       {/*
@@ -42,9 +67,12 @@ export default function HomePage() {
         fetchPriority="high"
       />
 
-      <HeroSection />
+      <HeroSection
+        blogPreviews={blogPreviews}
+        streamSchedule={streamSchedule}
+      />
 
-      {/* TODO(phase-4): add PatreonSection, StreamsSection, FeaturedProductsSection in subsequent sessions */}
+      {/* TODO: add /api/revalidate handling for streamSchedule + featuredVods tags when those Sanity types are wired into the webhook. */}
     </>
   );
 }

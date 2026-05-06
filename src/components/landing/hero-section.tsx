@@ -3,11 +3,24 @@
 import { useEffect, useRef, useState } from "react";
 import { useScroll, useTransform } from "framer-motion";
 import { HeroCanvas } from "./hero-canvas";
-import { HeroCopyOverlay } from "./hero-copy-overlay";
+import { HeroCopyOverlay, type BlogPreview } from "./hero-copy-overlay";
+import type { StreamSchedule } from "@/sanity/types";
 
 const TOTAL_FRAMES = 121;
 
-export function HeroSection() {
+export function HeroSection({
+  blogPreviews = [],
+  streamSchedule = null,
+}: {
+  // Pre-computed serializable post previews from Sanity, fetched on the
+  // server in (marketing)/page.tsx. Empty array is acceptable — Stage 3
+  // renders a fallback when no posts are available.
+  blogPreviews?: BlogPreview[];
+  // Stream schedule singleton from Sanity. Null if the document hasn't
+  // been published yet — Stage 4 falls back to NEXT_PUBLIC_YOUTUBE_CHANNEL_ID
+  // for the embed in that case.
+  streamSchedule?: StreamSchedule | null;
+}) {
   const heroRef = useRef<HTMLDivElement>(null);
   const [reducedMotion, setReducedMotion] = useState(false);
 
@@ -20,7 +33,7 @@ export function HeroSection() {
   }, []);
 
   // Sticky-pinning technique. The outer wrapper creates the scroll space
-  // (1000vh = 4 stages × 250vh). The inner sticky div pins for the duration
+  // (500vh = 4 stages × 125vh). The inner sticky div pins for the duration
   // of the outer's scroll. The dice scrubs in REVERSE (TOTAL_FRAMES → 1) so
   // it starts settled and rolls away across the four stages.
   const { scrollYProgress } = useScroll({
@@ -35,7 +48,12 @@ export function HeroSection() {
       <div ref={heroRef} className="relative">
         <div className="relative h-screen overflow-hidden bg-black">
           <HeroCanvas frameIndex={frameIndex} reducedMotion />
-          <HeroCopyOverlay scrollYProgress={scrollYProgress} reducedMotion />
+          <HeroCopyOverlay
+            scrollYProgress={scrollYProgress}
+            blogPreviews={blogPreviews}
+            streamSchedule={streamSchedule}
+            reducedMotion
+          />
         </div>
       </div>
     );
@@ -58,7 +76,11 @@ export function HeroSection() {
 
       <div className="sticky top-0 h-screen overflow-hidden bg-black">
         <HeroCanvas frameIndex={frameIndex} />
-        <HeroCopyOverlay scrollYProgress={scrollYProgress} />
+        <HeroCopyOverlay
+          scrollYProgress={scrollYProgress}
+          blogPreviews={blogPreviews}
+          streamSchedule={streamSchedule}
+        />
       </div>
     </div>
   );

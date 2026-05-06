@@ -1,5 +1,11 @@
 import { client } from "./client";
-import type { PostCard, PostDetail, TagRef } from "./types";
+import type {
+  FeaturedVods,
+  PostCard,
+  PostDetail,
+  StreamSchedule,
+  TagRef,
+} from "./types";
 
 const POST_CARD_PROJECTION = `
   _id,
@@ -56,6 +62,40 @@ export async function getAllTags(): Promise<TagRef[]> {
     `*[_type == "tag"] | order(name asc) { _id, name, "slug": slug.current, description }`,
     {},
     { next: { tags: ["tag"] } },
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Phase 4: Stream schedule + featured VODs singletons (used by hero stage 4)
+// ---------------------------------------------------------------------------
+
+export async function getStreamSchedule(): Promise<StreamSchedule | null> {
+  return client.fetch(
+    `*[_type == "streamSchedule"][0] {
+      youtubeChannelId,
+      "upcoming": upcoming[] {
+        _key,
+        title,
+        scheduledAt,
+        description
+      }
+    }`,
+    {},
+    { next: { tags: ["streamSchedule"] } },
+  );
+}
+
+export async function getFeaturedVods(): Promise<FeaturedVods | null> {
+  return client.fetch(
+    `*[_type == "featuredVods"][0] {
+      "vods": vods[] {
+        _key,
+        youtubeVideoId,
+        title
+      }
+    }`,
+    {},
+    { next: { tags: ["featuredVods"] } },
   );
 }
 
