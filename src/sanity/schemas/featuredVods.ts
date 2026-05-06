@@ -28,6 +28,14 @@ export const featuredVods = defineType({
               type: "string",
               description: "Optional. Falls back to the YouTube title.",
             }),
+            defineField({
+              name: "isShort",
+              title: "Is a YouTube Short?",
+              type: "boolean",
+              initialValue: false,
+              description:
+                "When true, the lightbox renders this video at 9:16 (vertical). The grid thumbnail stays 16:9 with a 'Shorts' badge.",
+            }),
           ],
           preview: { select: { title: "title", subtitle: "youtubeVideoId" } },
         }),

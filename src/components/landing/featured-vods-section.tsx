@@ -70,6 +70,11 @@ function VodThumbnail({ vod, onClick }: { vod: Vod; onClick: () => void }) {
           <Play aria-hidden="true" className="h-6 w-6 fill-stone-900 text-stone-900" />
         </div>
       </div>
+      {vod.isShort && (
+        <span className="absolute left-2 top-2 rounded-full bg-black/70 px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-white backdrop-blur-sm">
+          Shorts
+        </span>
+      )}
       {vod.title && (
         <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-3 pt-8">
           <p className="line-clamp-2 text-left text-sm font-medium text-white">
@@ -106,13 +111,20 @@ function VodLightbox({ vod, onClose }: { vod: Vod; onClose: () => void }) {
     };
   }, [onClose]);
 
+  // Shorts are 9:16; constrain to viewport height so a tall short doesn't
+  // overflow on small/short windows. Regular videos stay 16:9 capped at
+  // ~1024px wide.
+  const containerClass = vod.isShort
+    ? "m-auto h-[min(90vh,800px)] aspect-[9/16] rounded-xl bg-black p-0 backdrop:bg-black/80 backdrop:backdrop-blur-sm"
+    : "m-auto w-[min(90vw,1024px)] aspect-video rounded-xl bg-black p-0 backdrop:bg-black/80 backdrop:backdrop-blur-sm";
+
   return (
     <dialog
       ref={dialogRef}
-      className="m-auto w-[min(90vw,1024px)] rounded-xl bg-black p-0 backdrop:bg-black/80 backdrop:backdrop-blur-sm"
+      className={containerClass}
       aria-label={vod.title ? `Playing: ${vod.title}` : "Playing video"}
     >
-      <div className="relative aspect-video w-full">
+      <div className="relative h-full w-full">
         <iframe
           src={`https://www.youtube.com/embed/${vod.youtubeVideoId}?autoplay=1&rel=0`}
           title={vod.title ?? "FrozenDice video"}
