@@ -22,6 +22,10 @@ export const structure: StructureResolver = (S: StructureBuilder) =>
         .title("Featured VODs")
         .id("featuredVods")
         .child(S.document().schemaType("featuredVods").documentId("featuredVods")),
+      S.listItem()
+        .title("Privacy Policy")
+        .id("privacyPolicy")
+        .child(S.document().schemaType("privacyPolicy").documentId("privacyPolicy")),
 
       S.divider(),
 

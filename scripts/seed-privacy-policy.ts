@@ -66,7 +66,9 @@ function section(heading: string, paragraphs: string[]) {
 const today = new Date().toISOString().split("T")[0];
 
 const policy = {
-  _id: "privacyPolicySingleton",
+  // Match the canonical singleton _id used by structure.ts so the doc
+  // shows up in the Studio sidebar.
+  _id: "privacyPolicy",
   _type: "privacyPolicy",
   title: "Privacy Policy",
   lastUpdated: today,
