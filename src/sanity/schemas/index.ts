@@ -12,6 +12,7 @@ import { aboutPage } from "./aboutPage";
 import { patreonPerks } from "./patreonPerks";
 import { streamSchedule } from "./streamSchedule";
 import { featuredVods } from "./featuredVods";
+import { privacyPolicy } from "./privacyPolicy";
 
 export const schemaTypes: SchemaTypeDefinition[] = [
   // Shared objects
@@ -30,6 +31,7 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   patreonPerks,
   streamSchedule,
   featuredVods,
+  privacyPolicy,
 ];
 
 export const singletonTypes: string[] = [
@@ -37,4 +39,5 @@ export const singletonTypes: string[] = [
   "patreonPerks",
   "streamSchedule",
   "featuredVods",
+  "privacyPolicy",
 ];

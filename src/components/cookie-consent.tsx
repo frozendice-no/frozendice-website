@@ -1,51 +1,55 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useTransition } from "react";
+import { setConsent } from "@/app/actions/consent";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-const CONSENT_KEY = "cookie-consent";
+export function CookieConsent({ open }: { open: boolean }) {
+  const router = useRouter();
+  const [pending, startTransition] = useTransition();
 
-export function CookieConsent() {
-  const [visible, setVisible] = useState(false);
+  if (!open) return null;
 
-  useEffect(() => {
-    setVisible(!localStorage.getItem(CONSENT_KEY));
-  }, []);
-
-  function accept() {
-    localStorage.setItem(CONSENT_KEY, "accepted");
-    setVisible(false);
+  function decide(value: "accepted" | "declined") {
+    startTransition(async () => {
+      await setConsent(value);
+      // Re-render the layout so the (server-side) cookie read picks up
+      // the new value — this is what conditionally mounts <GoogleTagManager>
+      // (or removes it on Decline) without a full page reload.
+      router.refresh();
+    });
   }
-
-  function decline() {
-    localStorage.setItem(CONSENT_KEY, "declined");
-    setVisible(false);
-  }
-
-  if (!visible) return null;
 
   return (
-    <div role="region" aria-label="Cookie consent" className="fixed inset-x-0 bottom-0 z-50 border-t bg-background p-4 shadow-lg sm:flex sm:items-center sm:justify-between sm:gap-4 sm:px-6">
+    <div
+      role="region"
+      aria-label="Cookie consent"
+      className="fixed inset-x-0 bottom-0 z-50 border-t bg-background p-4 shadow-lg sm:flex sm:items-center sm:justify-between sm:gap-4 sm:px-6"
+    >
       <p className="text-sm text-muted-foreground">
-        We use cookies and analytics to improve your experience. By continuing,
-        you agree to our{" "}
-        <a href="/privacy" className="underline hover:text-foreground">
+        We use a small set of cookies and analytics to understand how the site
+        is used. Nothing loads until you accept. See our{" "}
+        <Link href="/privacy" className="underline hover:text-foreground">
           Privacy Policy
-        </a>
-        .
+        </Link>{" "}
+        for details.
       </p>
       <div className="mt-3 flex gap-2 sm:mt-0 sm:shrink-0">
         <button
-          onClick={decline}
-          className={cn(
-            buttonVariants({ variant: "outline", size: "sm" }),
-          )}
+          type="button"
+          onClick={() => decide("declined")}
+          disabled={pending}
+          className={cn(buttonVariants({ variant: "outline", size: "sm" }))}
         >
           Decline
         </button>
         <button
-          onClick={accept}
+          type="button"
+          onClick={() => decide("accepted")}
+          disabled={pending}
           className={cn(buttonVariants({ size: "sm" }))}
         >
           Accept

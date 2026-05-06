@@ -1,3 +1,4 @@
+import { cookies } from "next/headers";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import {
@@ -7,17 +8,24 @@ import {
 import { CookieConsent } from "@/components/cookie-consent";
 import { OrganizationJsonLd, WebSiteJsonLd } from "@/components/json-ld";
 
-export default function MarketingLayout({
+export default async function MarketingLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Server-read the consent cookie set by the setConsent / clearConsent
+  // server actions. Mount Google Tag Manager only when consent === "accepted";
+  // show the banner whenever the user has not yet decided.
+  const consent = (await cookies()).get("cookie-consent")?.value;
+  const consentGranted = consent === "accepted";
+  const showBanner = consent !== "accepted" && consent !== "declined";
+
   return (
     <>
-      <GoogleTagManager />
+      {consentGranted && <GoogleTagManager />}
       <OrganizationJsonLd />
       <WebSiteJsonLd />
-      <GoogleTagManagerNoscript />
+      {consentGranted && <GoogleTagManagerNoscript />}
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground focus:outline-none"
@@ -29,7 +37,7 @@ export default function MarketingLayout({
         {children}
       </main>
       <SiteFooter />
-      <CookieConsent />
+      <CookieConsent open={showBanner} />
     </>
   );
 }

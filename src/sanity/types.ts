@@ -66,3 +66,22 @@ export type Vod = {
 export type FeaturedVods = {
   vods: Vod[];
 };
+
+// --- Privacy policy singleton ---
+
+export type PrivacyPolicySection = {
+  _key: string;
+  heading: string;
+  body?: PortableTextBlock[];
+};
+
+export type PrivacyPolicy = {
+  title: string;
+  lastUpdated: string;
+  intro?: PortableTextBlock[];
+  sections?: PrivacyPolicySection[];
+  dataControllerName?: string;
+  dataControllerOrgNumber?: string;
+  dataControllerAddress?: string;
+  contactEmail?: string;
+};
