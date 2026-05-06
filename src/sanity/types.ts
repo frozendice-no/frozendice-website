@@ -86,3 +86,59 @@ export type PrivacyPolicy = {
   dataControllerAddress?: string;
   contactEmail?: string;
 };
+
+// --- About page ---
+
+export type AboutValue = {
+  _key: string;
+  icon: string;
+  title: string;
+  description: string;
+};
+
+export type AboutPageSeo = {
+  title?: string;
+  description?: string;
+  ogImage?: SanityImage;
+};
+
+export type AboutPage = {
+  eyebrow: string;
+  headline: string;
+  intro: string;
+  storyBody: PortableTextBlock[];
+  values: AboutValue[];
+  businessEmail: string;
+  seo?: AboutPageSeo;
+};
+
+export type CastMember = {
+  _id: string;
+  name: string;
+  role: "dm" | "player";
+  portrait: SanityImage;
+  characterName?: string;
+  characterClass?: string;
+  bio: string;
+  isActive: boolean;
+  order: number;
+};
+
+export type CampaignBlogTag = {
+  _id: string;
+  name: string;
+  slug: string;
+};
+
+export type Campaign = {
+  _id: string;
+  title: string;
+  slug: string;
+  summary: string;
+  status: "current" | "upcoming" | "past";
+  coverImage: SanityImage;
+  startDate?: string;
+  endDate?: string;
+  youtubePlaylistUrl?: string;
+  blogTag?: CampaignBlogTag;
+};
