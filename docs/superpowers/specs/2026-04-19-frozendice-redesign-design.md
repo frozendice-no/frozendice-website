@@ -50,69 +50,94 @@
 
 ## 3. Landing page (`/`)
 
-### 3.1 Hero: scroll-scrubbed dice animation
+The landing page is a single sticky-pinned hero with **four scroll-linked stages** that share a 121-frame reverse-direction dice canvas as continuous background. Stages cross-fade as scroll progresses; copy, CTAs, and per-stage decorative animations layer over the dice. A floating snow-pill site header overlays the whole experience.
 
-**Technique:** 121-frame WebP image sequence drawn to `<canvas>`, scroll-linked via framer-motion `useScroll` + `useTransform` + `useMotionValueEvent`. Section is pinned with sticky CSS (`h-[500vh]` wrapper + `sticky top-0` content), no JS pinning.
+Architecturally this differs from the original 3-beat single-hero design that was approved at the start of Phase 4. Stages 2 (Patreon), 3 (Blog), and 4 (Streams) are now *inside* the hero pin rather than separate sections following it. Stage 5 (Shop) is reserved for after the hero, displayed against the static final dice frame as background.
 
-**Why framer-motion over GSAP:** framer-motion is already installed; sticky-CSS pinning makes GSAP's pinning ergonomics unnecessary; ~40 KB bundle savings.
+### 3.1 Hero: 4-stage scroll-pinned dice animation
 
-**Assets (responsive, two sets):**
-- **Desktop** (`min-width: 768px`): `public/images/hero/desktop/1.webp`…`121.webp`, 1280px wide, target ~25 KB/frame → ~3 MB total.
-- **Mobile** (below `768px`): `public/images/hero/mobile/1.webp`…`121.webp`, 640px wide, target ~10 KB/frame → ~1.2 MB total.
-- Client picks the set at mount via `window.matchMedia('(min-width: 768px)')`. Preloaded via `new Image()`; skeleton until frame 1 is ready. Canvas redraws on `window.resize` with "contain" fit so the die stays centered at any viewport.
+**Container:**
 
-**Accessibility:** on `prefers-reduced-motion`, replace the canvas with a single static frame (frame 60, mid-roll) on any device. This is an explicit user accessibility preference, not a device-capability guess — the animation runs on mobile by default.
+- Outer wrapper: `position: relative` with `h-[500vh]` (~one viewport-height of scroll per stage) inside `<main>`.
+- Inner sticky div: `sticky top-0 h-screen overflow-hidden bg-black`.
+- Anchor divs at `top: 0%/25%/50%/75%` (`#stage-intro` / `#stage-patreon` / `#stage-blog` / `#stage-streams`) provide deep-link targets and `scroll-smooth` jumps.
+- Page root requires `position: relative` on `<html>` so framer-motion's scroll-container measurements resolve.
 
-**Implementation checkpoint:** during phase 4, real-device test on a mid-range Android (e.g. Pixel 6a or equivalent). If the 121-frame scrub stutters visibly on the mobile asset set, fall back to snapping to every-2nd frame on mobile (60 frames drawn, 121 mapped). Design stays the same; only the canvas draw cadence changes.
+**Asset pipeline:**
 
-**Narrative copy, mapped to scroll progress (three beats):**
+Source video `frozendice_dice/frozendice_animation.mp4` (h264, 1928×1072, 24 fps × 5 s = 121 frames). One-shot `scripts/optimize-hero-frames.ts` decodes the video to lossless PNG via `ffmpeg-static`, then sharp encodes two WebP sets:
 
-- **Beat 1 (0–33%)** — die tumbles in. H1 *"FrozenDice"*, tagline *"Cold dice. Hot stories."* (placeholder; tunable without code).
-- **Beat 2 (33–66%)** — die mid-roll, snow swirling. H2 *"Live D&D from the frozen north."*, sub *"Original campaigns. Nordic lore. Streamed weekly on YouTube."*
-- **Beat 3 (66–100%)** — die settles, snow drifts. H2 *"Join the saga."* + three CTA buttons:
-  - **Patreon** (primary, filled, brand accent) → `patreon.com/frozendice`
-  - **Watch Live** (secondary, outlined) → YouTube channel
-  - **Shop** (secondary, outlined) → `/store`
+- **Desktop:** source resolution 1928px wide, Q85, effort 6, ~85 KB/frame → ~10 MB total.
+- **Mobile:** 800px wide, Q82, effort 6, ~30 KB/frame → ~3.5 MB total.
 
-Copy overlays fade in/out via `useTransform(scrollYProgress, [a, b, c, d], [0, 1, 1, 0])` per beat.
+Output committed to `public/images/hero/{desktop,mobile}/N.webp`. The intermediate PNG temp dir is removed after each run. `frozendice_dice/` is gitignored; the source `.mp4` is kept locally as backup.
 
-### 3.2 Patreon section
+**Canvas:**
 
-**Layout:** two-column sticky.
+- Scroll-linked via framer-motion `useScroll({ target: heroRef, offset: ["start start", "end end"] })` lifted into `HeroSection`. `frameIndex = useTransform(scrollYProgress, [0, 1], [TOTAL_FRAMES, 1])` — **reverse direction**: the die starts settled (frame 121) at the top of the page and rolls away to frame 1 as the user scrolls through all four stages.
+- Cover-fit painting (`Math.max` scale) so the dice fills the viewport at any aspect ratio — no letterbox.
+- Internal pixel buffer is `window.innerWidth × devicePixelRatio` (capped at 2×) for crisp rendering on retina/4K displays.
+- Asset set picked at mount via `window.matchMedia('(min-width: 768px)')`. All frames are preloaded via `new Image()`; `onload` is wired before `src` to handle synchronous cache-hits (frame 1 is preloaded via `<link rel="preload" fetchPriority="high">` so it appears at LCP).
+- `drawFrame(n)` falls back to the nearest already-loaded earlier frame if frame N hasn't arrived yet, eliminating mid-scrub blank flashes.
 
-- **Left (sticky):** eyebrow *"Patreon"*, headline *"The full saga lives here."*, short body on member perks, primary CTA *"Become a Patron →"* (external).
-- **Right (scroll-animated):** stack of 4–5 "pages" representing D&D artifacts members unlock — campaign map, monster stat block, NPC portrait + bio, handwritten journal / session recap, Discord community moment.
+**Reduced motion:** `prefers-reduced-motion: reduce` collapses the wrapper to `h-screen` (no scroll pinning), loads only frame 60 (skipping the other 120 entirely — saves ~9 MB), and renders Stage 1 statically with CTAs pointing at direct external destinations (since `#stage-X` anchors don't exist in this mode).
 
-**Animation:** dealt-card reveal. Each page flies in from offscreen, rotates slightly, stacks/fans like cards dealt onto a tavern table. framer-motion `useTransform` on rotation + translation, staggered by mapping each card to a different scroll range.
+**Stage 1 — Intro (scroll 0–25%, visible at scroll 0):**
 
-**Below the stack (optional):** tier summary (2–3 placeholder tiers, e.g. *Campfire / Ranger / Dragonslayer*). Patreon itself remains the pricing source of truth.
+- Left-aligned panel, `max-w-xl`.
+- H1 *"FrozenDice"*, tagline *"Cold dice. Hot stories."*, intro paragraph mentioning live D&D + Patreon + blog.
+- Three CTAs: **Become a Patreon** (primary, brand-red `#FF424D`) → `patreon.com/FrozenDice`; **Read the Blog** → `/blog`; **Watch Stream** → channel handle URL.
+- Opacity is computed via the function form of `useTransform` (every scroll position maps to an explicit return value, avoiding keyframe-interpolation edge cases). `visibleAtStart: true` flag holds opacity at 1 from scroll 0 through 20%, then fades to 0 by 25%.
 
-**Content source:** Sanity `patreonPerks` singleton — ordered array of `{ image, label, blurb }` cards, plus tier summary fields.
+**Stage 2 — Patreon (scroll 25–50%):**
 
-### 3.3 Streams / VOD section
+- Two-column layout. Left: eyebrow *"Patreon"*, headline *"The full saga lives here."*, body, *"Become a Patreon →"* CTA.
+- Right (desktop only, `hidden lg:block`): three placeholder PDF cards fly in from off-screen-right via `useTransform(scrollYProgress, [in, out], [800, 0])` between scroll progress 0.28 and 0.42, staggered. Cards use page-mockup styling (header bar, faux text rows, image block placeholder).
+- Final art replaces placeholders with real PDF preview images of Patreon perks. Sanity-backed via the Phase 1 `patreonPerks` singleton (TODO — currently hardcoded copy).
 
-**Layout:**
+**Stage 3 — Blog (scroll 50–75%):**
 
-- Eyebrow *"Live & on-demand"*, headline *"Watch the saga unfold."*
-- **Hero player (always visible):** YouTube embed at `youtube.com/embed/live_stream?channel=<CHANNEL_ID>` — YouTube auto-serves the live stream when live, falls back to the channel's recent premiere/pinned video otherwise.
-- **LIVE pill overlay** (pulsing red dot) when channel is live, detected via a polled `/api/youtube/live-status` route handler using YouTube Data API v3 `search.list?eventType=live`.
-- **Schedule strip** — next 2–3 scheduled sessions, e.g. *"Next: Thursday 8pm CET — Session 14: The Glacier's Tomb."* Content from Sanity `streamSchedule` singleton.
-- **VOD grid** — 6 featured VODs rendered from `i.ytimg.com` thumbnails; click opens an inline lightbox with a YouTube iframe. Content from Sanity `featuredVods` array (video IDs + optional titles).
-- **CTA:** *Subscribe on YouTube →* + *See all VODs on YouTube →*.
+- Two-column. Left: eyebrow *"Blog"*, headline *"Dispatches from the frozen north."*, body, *"Read the Blog →"* link.
+- Right (desktop only): up to 3 latest blog posts from Sanity. `(marketing)/page.tsx` server-fetches `getAllPosts()` and transforms `PostCard[]` to a serializable `BlogPreview` shape (slug, title, excerpt, pre-built `coverUrl` string from `urlForImage`, alt, publishedAt) before threading down through the Client overlay. Each preview: 16:9 thumbnail, title (line-clamp-2), excerpt (line-clamp-2), formatted date, link to `/blog/[slug]`.
 
-**Data split (hybrid):** Sanity owns curated VODs + schedule (editor pastes video IDs after each stream). YouTube Data API owns live status only.
+**Stage 4 — Streams (scroll 75–100%):**
 
-**Quota:** default 10k units/day. `search.list?eventType=live` costs 100 units/call; 60-second `revalidate` in the route handler keeps us well under budget.
+- Two-column. Left: eyebrow *"Live & on-demand"*, headline *"Watch the saga unfold."*, body, *"Subscribe on YouTube →"* CTA. Below the CTA: up to 2 upcoming sessions from Sanity `streamSchedule.upcoming` as glassmorphic cards (title + formatted date/time).
+- Right (desktop only): YouTube live embed `youtube.com/embed/live_stream?channel=<id>` — channel ID from `streamSchedule.youtubeChannelId` with fallback to `NEXT_PUBLIC_YOUTUBE_CHANNEL_ID`. YouTube auto-serves the live stream when live, falls back to the channel's recent video otherwise.
+- **LIVE pill** overlay (pulsing red dot + "LIVE" label, `bg-black/70 backdrop-blur-sm`) appears when `/api/youtube/live-status` returns `{isLive: true}`. The route handler polls YouTube Data API v3 `search.list?eventType=live&channelId=<id>&type=video` (100 quota units/call) and is cached for 60 s — keeps the daily call count well under the 10k unit quota.
+- **VOD grid (TODO):** 6 featured VOD thumbnails with click-to-play `<dialog>` lightbox, sourced from Sanity `featuredVods` singleton. Pending follow-up; Stage 4 currently renders embed + schedule only.
 
-### 3.4 Shop featured items section
+**Stage 5 — Shop (TODO, post-hero):**
 
-**Layout:** eyebrow *"Shop"*, headline *"Gear for your table."*, one-line sub. **3-up grid** of featured products.
+- Below the sticky hero, against the static frame-1 dice as background.
+- 3-up featured products grid reusing `ProductCard` from `/store`, query `*[_type == "product" && featured == true && isPublished == true][0...3]`, `whileInView` staggered fade-in.
+- Deferred until Phase 3 ships the underlying product schema and storefront.
 
-**Cards:** image, name, one-line description, price, *View product →* link to `/store/[slug]`. Staggered `opacity + translateY` on scroll (`whileInView`), subtle hover lift. Reuses the same `ProductCard` component as `/store`.
+### 3.2 Render-context threading
 
-**Query:** `*[_type == "product" && featured == true && isPublished == true][0...3]`.
+`HeroCopyOverlay` is a Client Component (uses framer-motion hooks). Per-stage data fetched on the server (Sanity blog posts, stream schedule) is threaded through a `StageRenderContext` object passed to each stage's `render` function:
 
-**Footer link:** *See all products →* to `/store`.
+```ts
+type StageRenderContext = {
+  scrollYProgress: MotionValue<number>;
+  blogPreviews: BlogPreview[];
+  streamSchedule: StreamSchedule | null;
+};
+```
+
+This avoids prop-drilling and lets future stages receive additional server-resolved data without breaking changes.
+
+### 3.3 Site header
+
+Sticky-pill floating header (`position: fixed; top: 1rem; mx-auto w-fit`) overlaying the hero at all times. Three layers stacked:
+
+1. **Outer halo** — `bg-white/20 blur-2xl`, soft snow-light glow.
+2. **Snow shell** — `bg-white/70` with SVG turbulence displacement filter (`feTurbulence baseFrequency=0.85 numOctaves=2 + feDisplacementMap scale=5`) for organic flurry edges. Filter applied via `.snow-flurry-edge` utility class in `globals.css`.
+3. **Crisp content pill** — `bg-white/95 backdrop-blur-md rounded-full`, border `white/60`. Logo + nav links (Blog, Tools, About) + primary "Become a Patreon" CTA in brand red.
+
+Mobile collapses to hamburger via shadcn `Sheet`. Same items inside.
+
+The Store nav item is deferred pending Phase 3.
 
 ---
 

@@ -8,7 +8,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { StreamSchedule } from "@/sanity/types";
 
-const PATREON_URL = "https://www.patreon.com/c/FrozenDice";
+const PATREON_URL = "https://www.patreon.com/FrozenDice";
 const YOUTUBE_FALLBACK = "https://www.youtube.com/@FrozenDice_no";
 
 // Serializable shape passed from the server (page.tsx fetches Sanity, builds

@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 
-const PATREON_URL = "https://www.patreon.com/c/FrozenDice";
+const PATREON_URL = "https://www.patreon.com/FrozenDice";
 
 const navLinks = [
   { href: "/blog", label: "Blog" },
