@@ -113,7 +113,8 @@ export async function getFeaturedVods(): Promise<FeaturedVods | null> {
       "vods": vods[] {
         _key,
         youtubeVideoId,
-        title
+        title,
+        isShort
       }
     }`,
     {},

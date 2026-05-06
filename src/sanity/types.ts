@@ -61,6 +61,7 @@ export type Vod = {
   _key: string;
   youtubeVideoId: string;
   title?: string;
+  isShort?: boolean;
 };
 
 export type FeaturedVods = {
